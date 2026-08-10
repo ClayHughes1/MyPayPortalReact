@@ -1,0 +1,111 @@
+/* Navigation */
+
+.navbar {
+    background: #1e3a8a;
+    color: white;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links li {
+    list-style: none;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a.active {
+    border-bottom: 2px solid white;
+}
+
+.menu-button {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 2rem;
+    transition: all .3s ease;
+}
+
+.menu-button:hover {
+    color: #38bdf8;
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+
+    .menu-button {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+
+        position: absolute;
+
+        top: 70px;
+        left: 0;
+        right: 0;
+
+        background: #1e3a8a;
+
+        flex-direction: column;
+
+        padding: 1rem 0;
+
+        text-align: center;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        padding: 1rem;
+    }
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Native HTML5 validation styling */
+form input:user-invalid,
+form input:invalid,
+/* Custom state validation styling */
+form input.invalid-placeholder {
+  border-color: #ff4d4f !important;
+  background-color: #fff1f0 !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+
+.alert{
+    color: red ;
+    font-width: bold;
+}
