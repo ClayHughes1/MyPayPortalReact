@@ -7,6 +7,8 @@ import NotFoundPage from "../pages/NotFoundPage";
 import CreateAccount from "../pages/CreateAccount";
 import Login from "../pages/Login";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import CreatePaymentsage from "../features/payments/pages/CreatePayment";
+import CustomerReports from "../features/reports/pages/ReportPage"; 
 
 export default function AppRoutes() {
     const isAuthenticated = !!localStorage.getItem("token");
@@ -25,6 +27,8 @@ export default function AppRoutes() {
             />
 
             <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/customer-reports" element={<CustomerReports />} />
+
 
             <Route
                 path="/customers/:id"
@@ -40,8 +44,17 @@ export default function AppRoutes() {
                 }
             />
             <Route
+                path="/payments/create"
+                element={<CreatePaymentsage />}
+            />
+
+            <Route
                 path="/create-account"
-                element={<CreateAccount />}
+                element={
+
+                        <CreateAccount />
+
+                }
             />
 
             <Route

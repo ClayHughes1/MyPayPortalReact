@@ -2,9 +2,10 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import authService from "../../services/authServices";
-import { isLoggedIn, logout } from '../../services/authServices';
-
+import {
+    isLoggedIn as checkIsLoggedIn,
+    logout
+} from "../../services/authServices";
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -17,21 +18,18 @@ export default function Navbar() {
         setMenuOpen(false);
     };
 
-    // const handleLogout = () => {
-
-    //     authService.logout();
-
-    //     navigate("/");
-
-    // };
-
-    const isLoggedIn = authService.isLoggedIn();
+    const isLoggedIn = checkIsLoggedIn();
 
     return (
         <nav className="navbar p-2">
-            <div className="logo">
+            <NavLink
+                to="/"
+                className="logo"
+                onClick={closeMenu}
+            >
                 MyPay Portal
-            </div>
+            </NavLink>
+
 
             <button
                 className="menu-button"
@@ -43,27 +41,80 @@ export default function Navbar() {
 
             <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
                 <li>
-                    <NavLink to="/" onClick={closeMenu}>
-                        Hone
-                    </NavLink>
-                </li>
-
-                <li>
                     <NavLink to="/customers" onClick={closeMenu}>
                         Customers
                     </NavLink>
                 </li>
 
-                {/* <li>
-                    <NavLink to="/payments" onClick={closeMenu}>
-                        Payments
-                    </NavLink>
-                </li> */}
+                {/* {isLoggedIn && ( 
+                    <li className="nav-item dropdown">
+                        <span className="nav-link dropdown-toggle">
+                            Payments
+                        </span>
+
+                        <ul className="dropdown-menu">
+                            <li>
+                                <NavLink
+                                    to="/payments"
+                                    className="dropdown-item"
+                                    onClick={closeMenu}
+                                >
+                                    Payment List
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/payments/create"
+                                    className="dropdown-item"
+                                    onClick={closeMenu}
+                                >
+                                    Make a Payment
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </li>
+                )}  */}
+
+                {isLoggedIn && (
+                    <li className="nav-item dropdown">
+                        <button
+                            className="nav-link dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            Payments
+                        </button>
+
+                        <ul className="dropdown-menu">
+                            <li>
+                                <NavLink
+                                    to="/payments"
+                                    className="dropdown-item"
+                                    onClick={closeMenu}
+                                >
+                                    Payment List
+                                </NavLink>
+                            </li>
+
+                            <li>
+                                <NavLink
+                                    to="/payments/create"
+                                    className="dropdown-item"
+                                    onClick={closeMenu}
+                                >
+                                    Make a Payment
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </li>
+                )}
 
                 {isLoggedIn && (
                     <li>
-                        <NavLink to="/payments" onClick={closeMenu}>
-                            Payments
+                        <NavLink to="/customer-reports" onClick={closeMenu}>
+                            Reports
                         </NavLink>
                     </li>
                 )}

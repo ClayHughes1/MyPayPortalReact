@@ -10,8 +10,6 @@ import usePayments from "../hooks/usePayments";
 export default function PaymentsPage() {
 
     console.log("PaymentsPage");
-
-
     const [currentUser, setCurrentUser] = useState(null);
 
 
@@ -67,27 +65,27 @@ export default function PaymentsPage() {
 
 
 
-    const handleCreatePayment = (paymentData) => {
+    // const handleCreatePayment = (paymentData) => {
 
 
-        console.log("Payment data received:", paymentData);
+    //     console.log("Payment data received:", paymentData);
 
 
-        const payload = {
+    //     const payload = {
 
-            ...paymentData,
+    //         ...paymentData,
 
-            customerId: currentUser?.id
+    //         customerId: currentUser?.id
 
-        };
-
-
-        console.log("Final payment payload:", payload);
+    //     };
 
 
-        createPayment(payload);
+    //     console.log("Final payment payload:", payload);
 
-    };
+
+    //     createPayment(payload);
+
+    // };
 
 
 
@@ -103,7 +101,7 @@ export default function PaymentsPage() {
 
 
             <p>
-                Create and manage your MyPay payment accounts.
+                Manage your MyPay payment accounts.
             </p>
 
 
@@ -144,7 +142,7 @@ export default function PaymentsPage() {
             <div className="row">
 
 
-                <div className="col-lg-5">
+                {/* <div className="col-lg-5">
 
 
                     <div className="card shadow">
@@ -173,7 +171,7 @@ export default function PaymentsPage() {
                     </div>
 
 
-                </div>
+                </div> */}
 
 
 

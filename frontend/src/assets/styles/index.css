@@ -17,6 +17,8 @@
 .logo {
     font-size: 1.4rem;
     font-weight: bold;
+   text-decoration: none;
+   color:#fff1f0;
 }
 
 .nav-links {
@@ -38,7 +40,21 @@
 .nav-links a.active {
     border-bottom: 2px solid white;
 }
+.nav-item.dropdown {
+    position: relative;
+}
 
+.nav-item.dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
 .menu-button {
     display: none;
     background: transparent;

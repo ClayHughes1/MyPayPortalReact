@@ -8,7 +8,8 @@ import "./assets/styles/index.css";
 import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
+localStorage.removeItem("token");
+localStorage.removeItem("user");
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>

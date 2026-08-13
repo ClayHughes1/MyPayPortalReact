@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using AppPortal.Api.Integrations.ExternalPayment;
 using AppPortal.Api.Data;
 using AppPortal.Api.DTOs;
 using AppPortal.Api.Models;
-
+using AppPortal.Api.DTOs.Integrations;
 
 namespace AppPortal.Api.Controllers;
 
@@ -13,15 +13,20 @@ namespace AppPortal.Api.Controllers;
 [Route("api/[controller]")]
 public class PaymentsController : ControllerBase
 {
+    // private readonly ApplicationDbContext _context;
     private readonly ApplicationDbContext _context;
-
+    private readonly IExternalPaymentService _externalPaymentService;
+    private readonly ILogger<PaymentsController> _logger;
 
     public PaymentsController(
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        IExternalPaymentService externalPaymentService,
+        ILogger<PaymentsController> logger)
     {
         _context = context;
+        _externalPaymentService = externalPaymentService;
+        _logger = logger;
     }
-
 
 
     // GET:
@@ -30,11 +35,12 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> GetPayments(
         int customerId)
     {
+        // _logger.LogInformation(
+        //     "Payment data for . CustomerId: {CustomerId}, LoanType: {LoanType}, PaymentAmount: {PaymentAmount}",null,null,null);
 
-        // var payments = await _context.Payments
-        //     .Where(p =>
-        //         p.LoanAccount!.CustomerId == customerId)
-        //     .ToListAsync();
+    _logger.LogInformation(
+        "Payment data requested. CustomerId: {CustomerId}",
+        customerId);
 
     var payments = await _context.Payments
         .Include(p => p.LoanAccount)
@@ -102,71 +108,122 @@ public class PaymentsController : ControllerBase
 
     }
 
-
-
     // POST:
     // api/payments
     [HttpPost]
     public async Task<IActionResult> CreatePayment(
         CreatePaymentAccountRequest request)
     {
+        _logger.LogInformation(
+            "Payment processing initiated. CustomerId: {CustomerId}, LoanType: {LoanType}, PaymentAmount: {PaymentAmount}",
+            request.CustomerId,
+            request.LoanType,
+            request.PaymentAmount);
 
-        Console.WriteLine($"CustomerId received: {request.CustomerId}\n\n\n");
-        var loan = new LoanAccount
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync();
+
+        try
         {
-            CustomerId = request.CustomerId,
-            LoanType = request.LoanType,
-            LoanName = request.LoanName,
-            LenderName = request.LenderName,
-            AccountNumberEncrypted = request.AccountNumber,
-            CurrentBalance = request.CurrentBalance,
-            InterestRate = request.InterestRate,
-            PaymentFrequency = request.PaymentFrequency,
-            CreatedDate = DateTime.UtcNow
-        };
+            Console.WriteLine(
+                $"CustomerId received: {request.CustomerId}\n\n\n");
 
-        _context.LoanAccounts.Add(loan);
+            var loan = new LoanAccount
+            {
+                CustomerId = request.CustomerId,
+                LoanType = request.LoanType,
+                LoanName = request.LoanName,
+                LenderName = request.LenderName,
+                AccountNumberEncrypted = request.AccountNumber,
+                CurrentBalance = request.CurrentBalance,
+                InterestRate = request.InterestRate,
+                PaymentFrequency = request.PaymentFrequency,
+                CreatedDate = DateTime.UtcNow
+            };
 
-        await _context.SaveChangesAsync();
+            _context.LoanAccounts.Add(loan);
 
-        var payment = new Payment
-        {
-            LoanAccountId = loan.Id,
-
-            PaymentAmount =
-                request.PaymentAmount,
-
-            PaymentDate =
-                request.PaymentDate,
-
-            Status =
-                request.Status,
-
-            ConfirmationNumber =
-                request.ConfirmationNumber,
-
-            CreatedDate =
-                DateTime.UtcNow
-        };
+            await _context.SaveChangesAsync();
 
 
-        if(request.Status == "Completed")
-        {
-            payment.CompletedDate =
-                DateTime.UtcNow;
+            var externalPaymentRequest = new ExternalPaymentRequest
+            {
+                CustomerId = request.CustomerId,
+                LoanAccountId = loan.Id,
+                PaymentAmount = request.PaymentAmount,
+                PaymentType = "ACH"
+            };
+
+
+            ExternalPaymentResponse? externalPaymentResponse;
+
+            try
+            {
+                externalPaymentResponse =
+                    await _externalPaymentService.ProcessPaymentAsync(
+                        externalPaymentRequest);
+            }
+            catch (ExternalPaymentException ex)
+            {
+                await transaction.RollbackAsync();
+
+                return StatusCode(
+                    StatusCodes.Status503ServiceUnavailable,
+                    new
+                    {
+                        success = false,
+                        status = "ExternalServiceUnavailable",
+                        message = ex.Message
+                    });
+            }
+
+
+            var payment = new Payment
+            {
+                LoanAccountId = loan.Id,
+
+                PaymentAmount =
+                    request.PaymentAmount,
+
+                PaymentDate =
+                    request.PaymentDate,
+
+                Status =
+                    externalPaymentResponse?.Status
+                        ?? request.Status,
+
+                ConfirmationNumber =
+                    externalPaymentResponse?.ConfirmationNumber
+                        ?? request.ConfirmationNumber,
+
+                CreatedDate =
+                    DateTime.UtcNow
+            };
+
+
+            if (payment.Status == "Completed" ||
+                payment.Status == "Approved")
+            {
+                payment.CompletedDate =
+                    DateTime.UtcNow;
+            }
+
+
+            _context.Payments.Add(payment);
+
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            return Ok(payment);
         }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
 
-
-        _context.Payments.Add(payment);
-
-
-        await _context.SaveChangesAsync();
-
-
-        return Ok(payment);
-
+            throw;
+        }
     }
-
 
 
 
