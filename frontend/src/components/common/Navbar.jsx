@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { Navigate } from "react-router-dom";
 import {
     isLoggedIn as checkIsLoggedIn,
     logout
@@ -9,6 +10,8 @@ import {
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const navigate = useNavigate();
+    const isLoggedIn = checkIsLoggedIn();
 
     const toggleMenu = () => {
         setMenuOpen(prev => !prev);
@@ -18,7 +21,24 @@ export default function Navbar() {
         setMenuOpen(false);
     };
 
-    const isLoggedIn = checkIsLoggedIn();
+    const handleLoginLogout = () => {
+        console.log("isLogin value when clicked...  ",isLoggedIn);
+        if (isLoggedIn) {
+            // Log out
+            logout();
+
+
+            // Close the menu
+            closeMenu();
+
+            // Redirect to Dashboard
+            navigate("/dashboard");
+        } else {
+            // Go to Login
+            closeMenu();
+            navigate("/login");
+        }
+    };
 
     return (
         <nav className="navbar p-2">
@@ -119,10 +139,20 @@ export default function Navbar() {
                     </li>
                 )}
 
-                <li>
+                {/* <li>
                     <NavLink to="/login" onClick={closeMenu}>
                         Login
                     </NavLink>
+                </li> */}
+
+                <li>
+                    <button
+                        type="button"
+                        className="nav-link"
+                        onClick={handleLoginLogout}
+                    >
+                        {isLoggedIn ? "Log Out" : "Login"}
+                    </button>
                 </li>
 
                 <li>

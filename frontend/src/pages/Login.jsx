@@ -51,6 +51,10 @@ export default function Login(){
               JSON.stringify(result.user)
           );
 
+          if(localStorage.getItem("token"))
+          {
+            localStorage.setItem("isLoggedIn",true);
+          }
           navigate("/payments");
 
       }

@@ -36,10 +36,12 @@ export async function login(username, password) {
 export function isLoggedIn() 
 { 
     const token = localStorage.getItem("token"); 
+    console.log("The token value is.   ",token);
     return !!token; 
 } 
 // Log the user out 
-export function logout() 
-{ 
-    localStorage.removeItem("token"); 
+export function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
 }
