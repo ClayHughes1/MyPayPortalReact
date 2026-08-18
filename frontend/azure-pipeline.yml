@@ -1,0 +1,43 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  nodeVersion: '20.x'
+  imageName: 'mypayportal-react'
+
+steps:
+
+# Install Node.js
+- task: NodeTool@0
+  displayName: 'Install Node.js'
+  inputs:
+    versionSpec: '$(nodeVersion)'
+
+# Install dependencies
+- script: npm ci
+  displayName: 'Install npm dependencies'
+
+# Run tests
+- script: npm test -- --watchAll=false
+  displayName: 'Run React tests'
+  continueOnError: true
+
+# Build React application
+- script: npm run build
+  displayName: 'Build React application'
+
+# Build Docker image
+- script: |
+    docker build -t $(imageName):$(Build.BuildId) .
+  displayName: 'Build Docker image'
+
+# Publish build artifact
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish React build'
+  inputs:
+    PathtoPublish: 'build'
+    ArtifactName: 'react-build'
+    publishLocation: 'Container'

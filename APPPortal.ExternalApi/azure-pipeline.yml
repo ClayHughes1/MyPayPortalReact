@@ -1,0 +1,50 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dotnetVersion: '8.x'
+  imageName: 'external-payments-api'
+
+steps:
+
+# Install .NET SDK
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '$(dotnetVersion)'
+
+# Restore dependencies
+- script: dotnet restore
+  displayName: 'Restore NuGet packages'
+
+# Build solution
+- script: dotnet build --configuration Release --no-restore
+  displayName: 'Build .NET API'
+
+# Run unit tests
+- script: dotnet test --configuration Release --no-build
+  displayName: 'Run unit tests'
+
+# Publish API
+- script: |
+    dotnet publish \
+      --configuration Release \
+      --output $(Build.ArtifactStagingDirectory)/api
+  displayName: 'Publish .NET API'
+
+# Build Docker image
+- script: |
+    docker build -t $(imageName):$(Build.BuildId) .
+  displayName: 'Build Docker image'
+
+# Publish API artifact
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish API artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/api'
+    ArtifactName: 'api'
+    publishLocation: 'Container'
