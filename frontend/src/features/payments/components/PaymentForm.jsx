@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import paymentService from "../../../services/paymentService";
+import usePayments from "../hooks/usePayments"
 
 const initialState = {
     loanType: "Auto Loan",
@@ -36,14 +37,108 @@ const initialState = {
     cvvcode: ""
 };
 
+//Credit Card Test Payment
+const creditTestState = {
+    loanType: "Auto Loan",
+    loanName: "Test Auto Loan",
+    lenderName: "Test Bank",
 
-export default function PaymentForm({
-    customerId,
-    onSubmit
-}) {
+    // Loan account
+    lnAccountNumber: "12345678",
+    lnConfirmAccountNumber: "12345678",
 
+    originalLoanAmount: "25000",
+    currentBalance: "18500",
+    interestRate: "5.25",
+
+    // Auto pay
+    minimumPayment: "350",
+    paymentAmount: "500",
+    paymentFrequency: "Monthly",
+    paymentDate: "2026-09-01",
+
+    // Payment source
+    paymentMethod: "Card",
+    paymentType: "Card",
+
+    // ACH
+    routingNumber: "",
+    accountNumber: "",
+    confirmAccountNumber: "",
+    accountType: "Checking",
+
+    // Credit Card
+    creditcardnumber: "4111111111111111",
+    expdate: "2027-12-31",
+    cvvcode: "123"
+};
+
+//ACH Test Payment
+const achTestState = {
+    loanType: "Credit Card",
+    loanName: "Test ACH Card",
+    lenderName: "Test Bank",
+
+    // Loan account
+    lnAccountNumber: "12345678",
+    lnConfirmAccountNumber: "12345678",
+
+    originalLoanAmount: "25000",
+    currentBalance: "18500",
+    interestRate: "5.25",
+
+    // Auto pay
+    minimumPayment: "350",
+    paymentAmount: "500",
+    paymentFrequency: "Monthly",
+    paymentDate: "2026-09-01",
+
+    // Payment source
+    paymentMethod: "ACH",
+    paymentType: "ACH",
+
+    // ACH
+    routingNumber: "021000021",
+    accountNumber: "123456789",
+    confirmAccountNumber: "123456789",
+    accountType: "Checking",
+
+    // Credit Card
+    creditcardnumber: "",
+    expdate: "",
+    cvvcode: ""
+};
+
+export default function PaymentForm() {
+
+    const storedUser =
+        localStorage.getItem("user");
+
+    const user =
+        storedUser
+            ? JSON.parse(storedUser)
+            : null;
+
+    const customerId =
+        user?.id ?? 0;
+
+    const {
+        createPayment
+    } = usePayments();
+    
+    const [submitError, setSubmitError] = useState("");
+
+    // const [formData, setFormData] =
+    //     useState(initialState);
+
+    //Credit State for testing
     const [formData, setFormData] =
-        useState(initialState);
+        useState(creditTestState);
+
+    //Credit State for testing
+    // const [formData, setFormData] =
+    //     useState(achTestState);
+
 
     const [errors, setErrors] =
         useState({});
@@ -1222,46 +1317,171 @@ export default function PaymentForm({
      * ---------------------------------------------------------
      */
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
+        /*
+        * Clear any previous API submission error.
+        */
+        setSubmitError("");
 
-        const isValid =
-            validateForm();
+
+        /*
+        * ---------------------------------------------------------
+        * STEP 1: Validate the form
+        * ---------------------------------------------------------
+        *
+        * This includes the conditional payment validation.
+        *
+        * ACH:
+        *   routingNumber
+        *   accountNumber
+        *   confirmAccountNumber
+        *   accountType
+        *
+        * Card:
+        *   creditcardnumber
+        *   expdate
+        *   cvvcode
+        */
+        const isValid = validateForm();
 
 
+        /*
+        * STOP HERE if validation fails.
+        */
         if (!isValid) {
             return;
         }
 
 
         /*
-         * Clean string values before submitting.
-         */
+        * ---------------------------------------------------------
+        * STEP 2: Clean the form data
+        * ---------------------------------------------------------
+        */
+
         const cleanedFormData =
-            Object.entries(formData)
-                .reduce(
-                    (result, [key, value]) => {
+            Object.entries(formData).reduce(
+                (result, [key, value]) => {
 
-                        result[key] =
-                            typeof value === "string"
-                                ? value.trim()
-                                : value;
+                    result[key] =
+                        typeof value === "string"
+                            ? value.trim()
+                            : value;
 
-                        return result;
+                    return result;
 
-                    },
-                    {}
+                },
+                {}
+            );
+
+
+        /*
+        * ---------------------------------------------------------
+        * STEP 3: Submit to API
+        * ---------------------------------------------------------
+        */
+
+        await handleCreatePayment(
+            cleanedFormData
+        );
+    };
+
+     /*
+     * ---------------------------------------------------------
+     * Create Payment
+     * ---------------------------------------------------------
+     */
+
+    const handleCreatePayment = async (paymentData) => {
+
+        try {
+
+            console.log(
+                "Payment data received:",
+                paymentData,
+                "      customer id",customerId
+            );
+
+            if (!customerId || customerId <= 0) {
+
+                setSubmitError(
+                    "A valid customer ID is required to create the payment."
                 );
 
+                console.error(
+                    "Invalid customerId:",
+                    customerId
+                );
 
-        onSubmit(cleanedFormData);
+                return;
+            }
 
 
-        setFormData(initialState);
-        setErrors({});
-        setTouched({});
+            /*
+            * Add the customer ID to the validated
+            * form data before sending it to the API.
+            */
+            const payload = {
+                ...paymentData,
+                customerId
+            };
+
+
+            console.log(
+                "Final payment payload:",
+                payload
+            );
+
+
+            /*
+            * createPayment() in usePayments handles:
+            *
+            * PaymentRequest DTO mapping
+            * paymentService.create()
+            * loadPayments()
+            */
+            const result =
+                await createPayment(payload);
+
+
+            /*
+            * Only reset the form after the API
+            * successfully creates the payment.
+            */
+            if (result === true) {
+
+                setFormData(initialState);
+
+                setErrors({});
+
+                setTouched({});
+
+                setSubmitError("");
+
+                setShowPaymentInformation(false);
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "Payment submission failed:",
+                error
+            );
+
+
+            /*
+            * Keep all form data intact so the user
+            * can correct/retry the submission.
+            */
+            setSubmitError(
+                error?.message ||
+                "Unable to create payment. Please try again."
+            );
+        }
     };
 
 
@@ -1373,12 +1593,19 @@ export default function PaymentForm({
 
     }, [customerId]);
 
-
     return (
 
+
+        
         <form
             onSubmit={handleSubmit}
         >
+
+    {submitError && (
+        <div className="alert alert-danger mb-4">
+            {submitError}
+        </div>
+    )}
 
             <h4>
                 Loan Information

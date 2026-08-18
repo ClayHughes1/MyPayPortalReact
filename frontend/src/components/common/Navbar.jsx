@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
@@ -7,6 +7,9 @@ import {
     isLoggedIn as checkIsLoggedIn,
     logout
 } from "../../services/authServices";
+
+
+
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -32,7 +35,7 @@ export default function Navbar() {
             closeMenu();
 
             // Redirect to Dashboard
-            navigate("/dashboard");
+            navigate("/");
         } else {
             // Go to Login
             closeMenu();
@@ -60,11 +63,11 @@ export default function Navbar() {
             </button>
 
             <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
-                <li>
+                {/* <li>
                     <NavLink to="/customers" onClick={closeMenu}>
                         Customers
                     </NavLink>
-                </li>
+                </li> */}
 
                 {isLoggedIn && (
                     <li className="nav-item dropdown">
