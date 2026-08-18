@@ -12,6 +12,10 @@ import AutoPaySettings from "../components/ui/AutoPaySettings";
 
 import useCreateAccount from "../hooks/useCreateAccount";
 
+const generateUsername = (email) => {
+    return `${email}`;
+};
+
 export default function CreateAccount() {
 
     const navigate = useNavigate();
@@ -113,22 +117,39 @@ export default function CreateAccount() {
     //---------------------------------------------------------
     // Input Changes
     //---------------------------------------------------------
-
     const handleChange = (e) => {
 
         const { name, value, type, checked } = e.target;
 
-        setFormData(previous => ({
+        const newValue =
+            type === "checkbox"
+                ? checked
+                : value;
 
-            ...previous,
+        setFormData(previous => {
 
-            [name]:
-                type === "checkbox"
-                    ? checked
-                    : value
+            const updatedData = {
+                ...previous,
+                [name]: newValue
+            };
 
-        }));
+            // if (name === "firstName"  || name === "lastName" || name === "emaikl") {
+            if (name === "email") {
 
+                updatedData.username = generateUsername(
+
+                    name === "email"
+                        ? newValue
+                        : previous.email
+                );
+            }
+
+            if (name === "password") {
+                updatedData.password = newValue;
+            }
+
+            return updatedData;
+        });
     };
 
     //---------------------------------------------------------
@@ -137,26 +158,21 @@ export default function CreateAccount() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-try {
-  console.log("FORM SUBMIT FIRED");
+    try {
+        console.log("FORM SUBMIT FIRED");
+        console.log(
+            "PASSWORD:",
+            formData.password
+        );
 
-    console.log(
-        "ACCOUNT NUMBER:",
-        formData.accountNumber
-    );
+        if (formData.accountNumber !== formData.confirmAccountNumber) {
+            console.log("They are the same");
+            // setErrors({
+            //         accountNumber:
+            //             "Account numbers do not match."
+            //     });
 
-    console.log(
-        "CONFIRM ACCOUNT NUMBER:",
-        formData.confirmAccountNumber
-    );
-    if (formData.accountNumber !== formData.confirmAccountNumber) {
-console.log("They are the same");
-        // setErrors({
-        //         accountNumber:
-        //             "Account numbers do not match."
-        //     });
-
-            return;
+                return;
         }
 
         await createAccount(
@@ -222,9 +238,9 @@ console.log("They are the same");
                                 <form 
                                 // onSubmit={handleSubmit}
                                     onSubmit={(e) => {
-        console.log("FORM SUBMIT EVENT FIRED");
-        handleSubmit(e);
-    }}
+                                    console.log("FORM SUBMIT EVENT FIRED");
+                                    handleSubmit(e);
+                                }}
                                 >
 
                                     <CustomerForm
@@ -234,12 +250,6 @@ console.log("They are the same");
                                     />
 
                                     <AddressForm
-                                        formData={formData}
-                                        errors={errors}
-                                        handleChange={handleChange}
-                                    />
-
-                                    <PaymentForm
                                         formData={formData}
                                         errors={errors}
                                         handleChange={handleChange}

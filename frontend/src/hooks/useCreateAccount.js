@@ -75,9 +75,9 @@ console.log(validationErrors);
                 //formData.dob,
                 ssnLast4: formData.ssnLast4,
 
-                username: formData.username,
+                username: formData.email,
                 password: formData.password,
-
+                role: "Customer",
 
                 address1: formData.address1,
                 address2: formData.address2,

@@ -66,36 +66,6 @@ export default function Navbar() {
                     </NavLink>
                 </li>
 
-                {/* {isLoggedIn && ( 
-                    <li className="nav-item dropdown">
-                        <span className="nav-link dropdown-toggle">
-                            Payments
-                        </span>
-
-                        <ul className="dropdown-menu">
-                            <li>
-                                <NavLink
-                                    to="/payments"
-                                    className="dropdown-item"
-                                    onClick={closeMenu}
-                                >
-                                    Payment List
-                                </NavLink>
-                            </li>
-
-                            <li>
-                                <NavLink
-                                    to="/payments/create"
-                                    className="dropdown-item"
-                                    onClick={closeMenu}
-                                >
-                                    Make a Payment
-                                </NavLink>
-                            </li>
-                        </ul>
-                    </li>
-                )}  */}
-
                 {isLoggedIn && (
                     <li className="nav-item dropdown">
                         <button
@@ -124,7 +94,16 @@ export default function Navbar() {
                                     className="dropdown-item"
                                     onClick={closeMenu}
                                 >
-                                    Make a Payment
+                                    Create A Payment
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink
+                                    to="/payments/makeapayment"
+                                    className="dropdown-item"
+                                    onClick={closeMenu}
+                                >
+                                    Make A Payment
                                 </NavLink>
                             </li>
                         </ul>

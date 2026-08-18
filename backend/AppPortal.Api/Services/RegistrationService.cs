@@ -49,7 +49,9 @@ public class RegistrationService
 
                 Role="Customer",
 
-                IsActive=true
+                IsActive=true,
+
+                UserName = request?.UserName  
 
             };
 
@@ -68,7 +70,7 @@ public class RegistrationService
 
                 UserId=user.Id,
 
-                Username=request?.Username,
+                Username=request?.UserName,
 
                 Password=request?.Password,
 

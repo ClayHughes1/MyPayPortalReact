@@ -14,7 +14,6 @@ const ReportPage = () => {
         setError("");
 
         const user = JSON.parse(localStorage.getItem("user"));
-
         const customerId = user?.id;
 
         if (!customerId) {
@@ -35,12 +34,67 @@ const ReportPage = () => {
         try {
             setLoading(true);
 
-            const pdfBlob =
-                await reportService.generatePaymentHistoryReport(
-                    customerId,
-                    dateFrom,
-                    dateTo
-                );
+            let pdfBlob;
+
+            switch (reportType) {
+
+                case "payment-history":
+                    pdfBlob =
+                        await reportService.generatePaymentHistoryReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                case "payment-total-by-loan-type":
+                    pdfBlob =
+                        await reportService.generatePaymentTotalsByLoanTypeReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                case "payment-total-by-status":
+                    pdfBlob =
+                        await reportService.generatePaymentTotalsByStatusReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                case "payment-by-month":
+                    pdfBlob =
+                        await reportService.generatePaymentsByMonthReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                case "payment-summary":
+                    pdfBlob =
+                        await reportService.generatePaymentSummaryReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                case "payment-by-loan-account":
+                    pdfBlob =
+                        await reportService.generatePaymentsByLoanAccountReport(
+                            customerId,
+                            dateFrom,
+                            dateTo
+                        );
+                    break;
+
+                default:
+                    throw new Error("Invalid report type selected.");
+            }
 
             const pdfUrl = window.URL.createObjectURL(pdfBlob);
 
@@ -85,7 +139,7 @@ const ReportPage = () => {
                                     className="alert alert-danger"
                                     role="alert"
                                 >
-                                    "Something went wrong"
+                                    {error}
                                 </div>
                             )}
 
@@ -111,6 +165,26 @@ const ReportPage = () => {
                                     >
                                         <option value="payment-history">
                                             Payment History
+                                        </option>
+
+                                        <option value="payment-total-by-loan-type">
+                                            Payment Totals By Loan Type
+                                        </option>
+
+                                        <option value="payment-total-by-status">
+                                            Payment Totals By Status
+                                        </option>
+
+                                        <option value="payment-by-month">
+                                            Payments By Month
+                                        </option>
+
+                                        <option value="payment-summary">
+                                            Payment Summary
+                                        </option>
+
+                                        <option value="payment-by-loan-account">
+                                            Payments By Loan Account
                                         </option>
                                     </select>
 

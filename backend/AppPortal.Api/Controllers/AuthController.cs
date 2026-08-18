@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
 [HttpPost("login")]
 public async Task<IActionResult> Login(LoginRequest request)
 {
-    Console.Write("Inn Login method");
+    Console.Write("In Login method");
 
     if (string.IsNullOrWhiteSpace(request.Username) ||
         string.IsNullOrWhiteSpace(request.Password))

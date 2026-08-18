@@ -30,14 +30,18 @@ public class JWTService : IJwtService
         {
             new Claim(
                 ClaimTypes.NameIdentifier,
-                login.Id.ToString()
+                login.User!.Id.ToString()
             ),
-
 
             new Claim(
                 ClaimTypes.Name,
                 login.Username
             ),
+            
+            new Claim(
+                ClaimTypes.Email,
+                login.User.Email ?? string.Empty
+            )
 
         };
 

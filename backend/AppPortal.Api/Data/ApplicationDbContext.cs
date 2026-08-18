@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AppPortal.Api.Models;
+using AppPortal.Api.DTOs.Reports;
 
 namespace AppPortal.Api.Data;
 
@@ -22,6 +23,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Payment> Payments { get; set; }
 
+    public DbSet<PaymentSource> PaymentSources { get; set; }
+
     public DbSet<LoanAccount> LoanAccounts { get; set; }
 
     protected override void OnModelCreating(
@@ -42,6 +45,12 @@ public class ApplicationDbContext : DbContext
             .HasOne(u => u.Login)
             .WithOne(l => l.User)
             .HasForeignKey<Login>(l => l.UserId);
+
+        modelBuilder.Entity<PaymentSource>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<LoanAccount>()
             .Property(l => l.CurrentBalance)

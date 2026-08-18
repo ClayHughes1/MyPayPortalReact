@@ -7,8 +7,9 @@ import NotFoundPage from "../pages/NotFoundPage";
 import CreateAccount from "../pages/CreateAccount";
 import Login from "../pages/Login";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-import CreatePaymentsage from "../features/payments/pages/CreatePayment";
+import CreatePaymentsPage from "../features/payments/pages/CreatePayment";
 import CustomerReports from "../features/reports/pages/ReportPage"; 
+import MakeAPayment  from "../features/payments/pages/MakePayment" ;
 
 export default function AppRoutes() {
     const isAuthenticated = !!localStorage.getItem("token");
@@ -45,7 +46,12 @@ export default function AppRoutes() {
             />
             <Route
                 path="/payments/create"
-                element={<CreatePaymentsage />}
+                element={<CreatePaymentsPage />}
+            />
+
+            <Route
+                path="/payments/makeapayment"
+                element={<MakeAPayment />}
             />
 
             <Route

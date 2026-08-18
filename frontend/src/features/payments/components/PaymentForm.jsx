@@ -1,6 +1,9 @@
 // components/PaymentForm.jsx
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import paymentService from "../../../services/paymentService";
+
+import usePayments from "../hooks/usePayments";
 
 
 const initialState = {
@@ -14,13 +17,15 @@ const initialState = {
 
     accountNumber:"",
 
+    lnAccountNumber: "",
+
+    lnConfirmAccountNumber:"",
 
     originalLoanAmount:"",
 
     currentBalance:"",
 
     interestRate:"",
-
 
     minimumPayment:"",
 
@@ -30,49 +35,224 @@ const initialState = {
 
     paymentDate:"",
 
-
     paymentMethod:"ACH",
-
 
     routingNumber:"",
 
-    bankAccountNumber:""
+    bankAccountNumber:"",
 
+    paymentType:"ACH",
+
+    accountType: "",
+
+    expdate: "",
+
+    cvvcode: "",
+
+    accountNumber:"",
+
+    confirmAccountNumber:""
 };
 
 
 
 export default function PaymentForm({
+    customerId,
     onSubmit
 }) {
 
 
-const [formData,setFormData] = useState(initialState);
+    const [formData,setFormData] = useState(initialState);
+
+    const [showPaymentInformation, setShowPaymentInformation] =
+        useState(false);
+
+    const [currentPayment, setCurrentPayment] =
+        useState(null);
+
+    const [currentPaymentSouirce, setCurrentPaymentSouirce] =
+        useState(null);
 
 
+    const [loadingPayment, setLoadingPayment] =
+        useState(false);
 
-const handleChange=(e)=>{
-    const {name,value}=e.target;
+    // useEffect(() => {
+
+    //     async function loadPaymentInformation() {
+
+    //         try {
+
+    //             setLoadingPayment(true);
+
+    //             const data =
+    //                 await paymentService.getAll();
+
+    //             if (data && data.length > 0) {
+
+    //                 setCurrentPayment(data[0]);
+
+    //             }
+    //             else {
+
+    //                 setCurrentPayment(null);
+
+    //             }
+
+    //         }
+    //         catch (error) {
+
+    //             console.error(
+    //                 "Unable to load payment information:",
+    //                 error
+    //             );
+
+    //             setCurrentPayment(null);
+
+    //         }
+    //         finally {
+
+    //             setLoadingPayment(false);
+
+    //         }
+
+    //     }
+
+    //     loadPaymentInformation();
+
+    // }, []);
 
 
-    setFormData(prev=>({
-        ...prev,
-        [name]:value
-    }));
+    useEffect(() => {
 
-};
+        // async function loadPaymentInformation() {
+
+        //     try {
+
+        //         setLoadingPayment(true);
+
+        //         const data =
+        //             await paymentService.getAll(customerId);
+
+        //         if (data && data.length > 0) {
+
+        //             setCurrentPayment(data[0]);
+
+        //         }
+        //         else {
+
+        //             setCurrentPayment(null);
+
+        //         }
+
+        //     }
+        //     catch (error) {
+
+        //         console.error(
+        //             "Unable to load payment information:",
+        //             error
+        //         );
+
+        //         setCurrentPayment(null);
+
+        //     }
+        //     finally {
+
+        //         setLoadingPayment(false);
+
+        //     }
+
+        // }
+
+        async function loadAllPaymentSources(){
+
+            try {
+
+                setLoadingPayment(true);
+
+                const data =
+                    await paymentService.getAllPaymentSources();
+
+                if (data && data.length > 0) {
+
+                    setCurrentPaymentSouirce(data[0]);
+
+                }
+                else {
+
+                    setCurrentPaymentSouirce(null);
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Unable to load payment sources information:",
+                    error
+                );
+
+                setCurrentPaymentSouirce(null);
+
+            }
+            finally {
+
+                setLoadingPayment(false);
+
+            }
+
+        }
+
+        if (customerId > 0) {
+            console.log("Calling the loadPayment function in the useEffect");
+            // loadPaymentInformation();
+            // loadAllPaymentSources();
+
+        }
+
+    }, [customerId]);
 
 
+    const handleChange=(e)=>{
+        const {name,value}=e.target;
 
-const handleSubmit=(e)=>{
+        setFormData(prev=>({
+            ...prev,
+            [name]:value
+        }));
+    };
 
-    e.preventDefault();
+    const handleSubmit=(e)=>{
 
-    onSubmit(formData);
+        e.preventDefault();
 
-    setFormData(initialState);
+        onSubmit(formData);
 
-};
+        setFormData(initialState);
+
+    };
+
+    const handleCreatePayment = (paymentData) => {
+
+
+        console.log("Payment data received:", paymentData);
+
+
+        const payload = {
+
+            ...paymentData,
+
+            customerId: currentUser?.id
+
+        };
+
+
+        console.log("Final payment payload:", payload);
+
+
+        createPayment(payload);
+
+    };
 
 
 
@@ -124,8 +304,8 @@ const handleSubmit=(e)=>{
         <input
             type="password"
             className="form-control mb-3"
-            name="accountNumber"
-            value={formData.accountNumber}
+            name="lnAccountNumber"
+            value={formData.lnAccountNumber}
             onChange={handleChange}
             placeholder="Account Number"
             required
@@ -134,14 +314,190 @@ const handleSubmit=(e)=>{
         <input
             type="password"
             className="form-control mb-3"
-            name="confirmAccountNumber"
-            value={formData.confirmAccountNumber}
+            name="lnConfirmAccountNumber"
+            value={formData.lnConfirmAccountNumber}
             onChange={handleChange}
             placeholder="Confirm Account Number"
             required
         />
 
-        <h4>Loan Amounts</h4>
+        <h4>Payment Information</h4>
+
+        {loadingPayment && (
+            <div className="mb-4">
+                Loading payment information...
+            </div>
+        )}
+
+        {!loadingPayment && currentPayment && !showPaymentInformation && (
+
+            <div className="card mb-4">
+
+                <div className="card-body">
+
+                    <h5>
+                        Current Payment Method
+                    </h5>
+
+                    <p className="mb-3">
+                        {currentPayment.paymentType}
+                        {" "}
+                        ending in
+                        {" "}
+                        {currentPayment.lastFour}
+                    </p>
+
+
+                    <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        onClick={() =>
+                            setShowPaymentInformation(true)
+                        }
+                    >
+                        Change Payment Method
+                    </button>
+
+                </div>
+
+            </div>
+        )}
+
+        {!loadingPayment && !currentPayment && !showPaymentInformation && (
+
+            <div className="mb-4">
+
+                <p>
+                    No payment method has been added.
+                </p>
+
+
+                <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() =>
+                        setShowPaymentInformation(true)
+                    }
+                >
+                    Add Payment Method
+                </button>
+
+            </div>
+        )}
+
+        {showPaymentInformation && (
+            <div className="row">
+
+                <div className="col-md-12 mb-2">
+                    Payment Type: [{formData.paymentType}]
+                </div>
+
+                <div className="col-md-12 mb-4">
+                    <select
+                    className="form-select"
+                        name="paymentType"
+                        value={formData.paymentType}
+                        onChange={handleChange}
+                        required
+                        >
+                        <option value="ACH">ACH</option>
+                        <option value="Card">Credit Card</option>
+                    </select>                   
+                </div> 
+
+                {formData.paymentType === "ACH" && (
+                    <>
+                        <div className="col-md-12">
+                            <input
+                                className="form-control mb-4"
+                                type="text"
+                                name="routingNumber"
+                                placeholder="Routing Number"
+                                value={formData.routingNumber}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>                
+                        <div className="col-md-12">
+                            <input
+                                className="form-control mb-4"
+                                type="text"
+                                name="accountNumber"
+                                placeholder="Account Number"
+                                value={formData.accountNumber}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="col-md-12 mb-4">
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="confirmAccountNumber"
+                                placeholder="Confirm Account Number"
+                                value={formData.confirmAccountNumber}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="col-md-12 mb-4">
+                            <select className="form-select" name="accountType"
+                            value={formData.accountType}onChange={handleChange}>
+                                <option value="Checking">
+                                    Checking
+                                </option>
+
+                                <option value="Savings">
+                                    Savings
+                                </option>
+                                required
+                            </select>
+                        </div>
+                    </>
+                )}
+
+                {formData.paymentType === "Card" && (
+                    <>
+                        <div className="col-md-12 mb-4">
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="creditcardnumber"
+                                placeholder="Credit Card #"
+                                value={formData.creditcardnumber}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="col-md-12 mb-4">
+                            <input
+                                className="form-control"
+                                type="date"
+                                name="expdate"
+                                value={formData.expdate}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="col-md-6 mb-4">
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="cvvcode"
+                                placeholder="CVV Code"
+                                value={formData.cvvcode}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </>
+                )}  
+            </div>          
+        )}
+
+        <h4>Loan Amount</h4>
 
         <input
             type="number"
@@ -207,6 +563,4 @@ const handleSubmit=(e)=>{
     </form>
 
     );
-
-
 }

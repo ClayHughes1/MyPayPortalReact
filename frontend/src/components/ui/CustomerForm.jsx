@@ -52,12 +52,32 @@ export default function CustomerForm({ formData, handleChange }) {
 
                     <input
                         type="email"
+                        name="email"
+                        value={formData.email}
                         className="form-control"
+                        onChange={handleChange}
                         required
                     />
              
                 </div>
-            </div>  
+            </div> 
+            <div className="row mb-2">
+                 <div className="col-md-2">
+                    <label className="form-label">
+                        User Name
+                    </label>
+                </div>
+                <div className="col-md-5">
+                    <input
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        readOnly
+                        diabled
+                        className="form-control"
+                    />
+                </div>
+            </div>
             <div className="row mb-2">
                 <div className="col-md-2">
                     <label className="form-label">
@@ -68,6 +88,8 @@ export default function CustomerForm({ formData, handleChange }) {
 
                     <input
                         type="password"
+                        name="password"
+                        // value={formData.password}
                         className="form-control"
                         required
                     />

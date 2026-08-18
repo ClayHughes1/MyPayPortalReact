@@ -2,8 +2,10 @@ import { useEffect,useState } from "react";
 
 import paymentService from "../../../services/paymentService";
 
-import PaymentRequest from "../../../dto/requests/CreatePaymentRequest";
-
+import PaymentRequest 
+    from "../../../dto/requests/CreatePaymentRequest";
+import MakePaymentRequest
+    from "../../../dto/requests/MakePaymentRequest";
 
 export default function usePayments(){
 
@@ -16,16 +18,33 @@ export default function usePayments(){
 
 
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    // const user = JSON.parse(localStorage.getItem("user"));
+
+    const storedUser =
+        localStorage.getItem("user");
+
+    const user =
+        storedUser
+            ? JSON.parse(storedUser)
+            : null;
 
     const customerId = user?.id;
 
-console.log("customer id in",customerId);
-    useEffect(()=>{
+    console.log("customer id in",customerId);
+
+    useEffect(() => {
+
+        if (!customerId) {
+            console.warn(
+                "usePayments: customerId is not available."
+            );
+
+            return;
+        }
 
         loadPayments();
 
-    },[]);
+    }, [customerId]);
 
 
 
@@ -58,9 +77,6 @@ console.log("customer id in",customerId);
 
     };
 
-
-
-
     const createPayment = async(data)=>{
 
 
@@ -90,9 +106,6 @@ console.log(data);
 
     };
 
-
-
-
     const updatePayment =
         async(id,data)=>{
 
@@ -107,9 +120,6 @@ console.log(data);
 
     };
 
-
-
-
     const deletePayment =
         async(id)=>{
 
@@ -121,6 +131,35 @@ console.log(data);
 
     };
 
+    const makePayment = async (data) => {
+
+        try {
+
+            const request =
+                new MakePaymentRequest(data);
+
+            console.log(
+                "Make Payment request:",
+                request
+            );
+
+            const response =
+                await paymentService.makePayment(request);
+
+            await loadPayments();
+
+            return response;
+
+        }
+        catch (err) {
+
+            setError(err.message);
+
+            throw err;
+
+        }
+
+    };
 
 
     return {
@@ -136,7 +175,9 @@ console.log(data);
 
         updatePayment,
 
-        deletePayment
+        deletePayment,
+
+        makePayment
 
     };
 

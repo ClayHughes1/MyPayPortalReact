@@ -27,20 +27,36 @@ public class AccountService
                 "An account with this email already exists.");
         }
 
+        // Create the User record
         var user = new User
         {
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
+            UserName = request.UserName,
+            Role = request.Role
         };
- 
+
         _context.Users.Add(user);
 
+        // Save User so the database generates user.Id
+        await _context.SaveChangesAsync();
+
+        // Create the Login record using the newly created User.Id
+        var login = new Login
+        {
+            Username = request.UserName,
+            UserId = user.Id,
+            Password = request.Password
+        };
+
+        _context.Logins.Add(login);
+
+        // Save Login
         await _context.SaveChangesAsync();
 
         return user;
     }
-
 
     // private static string HashPassword(string password)
     // {

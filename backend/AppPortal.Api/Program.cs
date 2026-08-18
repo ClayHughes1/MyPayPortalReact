@@ -12,6 +12,8 @@ using Serilog;
 using System.Data;
 using Serilog.Sinks.MSSqlServer;
 using Serilog.Debugging;
+using Microsoft.OpenApi;
+
 
 SelfLog.Enable(message =>
 {
@@ -137,8 +139,28 @@ builder.Services
         options.JsonSerializerOptions.ReferenceHandler =
             ReferenceHandler.IgnoreCycles;
     });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token. Example: Bearer {token}"
+    });
+
+    options.AddSecurityRequirement(document =>
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+        });
+});
+
 
 // Register EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -204,11 +226,11 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Pipeline
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 // app.UseHttpsRedirection();
 
