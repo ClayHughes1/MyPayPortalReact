@@ -129,40 +129,6 @@ export default function CustomerForm({ formData, handleChange }) {
                 </div>
             </div>  
         </div>
-        // <section>
-
-        //     <h2>Customer Information</h2>
-
-        //     <input
-        //         name="firstName"
-        //         placeholder="First Name"
-        //         value={formData.firstName}
-        //         onChange={handleChange}
-        //     />
-
-        //     <input
-        //         name="lastName"
-        //         placeholder="Last Name"
-        //         value={formData.lastName}
-        //         onChange={handleChange}
-        //     />
-
-        //     <input
-        //         name="email"
-        //         placeholder="Email"
-        //         value={formData.email}
-        //         onChange={handleChange}
-        //     />
-
-        //     <input
-        //         name="phone"
-        //         placeholder="Phone"
-        //         value={formData.phone}
-        //         onChange={handleChange}
-        //     />
-
-        // </section>
-
     );
 
 }

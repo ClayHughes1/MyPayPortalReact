@@ -13,7 +13,6 @@ namespace AppPortal.Api.Controllers;
 [Route("api/[controller]")]
 public class PaymentsController : ControllerBase
 {
-    // private readonly ApplicationDbContext _context;
     private readonly ApplicationDbContext _context;
     private readonly IExternalPaymentService _externalPaymentService;
     private readonly ILogger<PaymentsController> _logger;
@@ -35,9 +34,6 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> GetPayments(
         int customerId)
     {
-        // _logger.LogInformation(
-        //     "Payment data for . CustomerId: {CustomerId}, LoanType: {LoanType}, PaymentAmount: {PaymentAmount}",null,null,null);
-
     _logger.LogInformation(
         "Payment data requested. CustomerId: {CustomerId}",
         customerId);

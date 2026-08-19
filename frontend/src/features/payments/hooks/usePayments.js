@@ -77,35 +77,6 @@ export default function usePayments(){
 
     };
 
-//     const createPayment = async(data)=>{
-
-
-//         try{
-
-// console.log(data);
-//             const request =
-//                 new PaymentRequest(data);
-
-//    console.log("Request object after DTO mapping:", request);
-
-
-//             await paymentService.create(request);
-
-
-
-//             await loadPayments();
-
-
-//         }
-//         catch(err){
-
-//             setError(err.message);
-
-//         }
-
-
-//     };
-
     const createPayment = async (data) => {
 
         try {

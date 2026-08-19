@@ -72,7 +72,6 @@ console.log(validationErrors);
                 phone: formData.phone,
 
                 dateOfBirth: "1974-02-17",
-                //formData.dob,
                 ssnLast4: formData.ssnLast4,
 
                 username: formData.email,

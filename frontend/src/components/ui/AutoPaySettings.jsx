@@ -19,4 +19,3 @@ export default function AutoPaySettings({ formData, handleChange })
         </div>
     );
 }
-// export default AutoPaySettings

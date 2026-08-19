@@ -185,8 +185,9 @@ builder.Services.AddHttpClient<IExternalPaymentService, ExternalPaymentService>(
                 .Value;
 
         client.BaseAddress = new Uri(settings.BaseUrl);
-    });// CORS
-
+    });
+    
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
@@ -232,7 +233,6 @@ var app = builder.Build();
     app.UseSwaggerUI();
 // }
 
-// app.UseHttpsRedirection();
 
 // CORS should be before authentication/authorization
 app.UseCors("ReactApp");

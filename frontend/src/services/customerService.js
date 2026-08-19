@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_BASE_URL } from "../config/apiConfig";
 
-
+//Update this service to use fetch instead of axios
 const API_URL = "http://localhost:5000/api/customers";
 
 const create = async (customerData) => {

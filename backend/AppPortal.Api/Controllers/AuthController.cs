@@ -9,10 +9,6 @@ namespace AppPortal.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    // private readonly AuthService _authService;
-    // private readonly IJwtService _jwtService;
-    // private readonly ApplicationDbContext _context;
-
     private readonly ApplicationDbContext _context;
     private readonly IJwtService _jwtService;
 

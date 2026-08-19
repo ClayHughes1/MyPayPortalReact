@@ -62,34 +62,6 @@ export default function PaymentsPage() {
 
     }, []);
 
-
-
-
-    // const handleCreatePayment = (paymentData) => {
-
-
-    //     console.log("Payment data received:", paymentData);
-
-
-    //     const payload = {
-
-    //         ...paymentData,
-
-    //         customerId: currentUser?.id
-
-    //     };
-
-
-    //     console.log("Final payment payload:", payload);
-
-
-    //     createPayment(payload);
-
-    // };
-
-
-
-
     return (
 
         <div className="container-fluid py-4">

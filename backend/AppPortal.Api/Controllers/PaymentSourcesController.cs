@@ -1,15 +1,12 @@
 using System.Security.Claims;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using AppPortal.Api.Data;
 using AppPortal.Api.DTOs;
 using AppPortal.Api.Models;
 
 namespace AppPortal.Api.Controllers;
-
 
 [ApiController]
 [Route("api/[controller]")]

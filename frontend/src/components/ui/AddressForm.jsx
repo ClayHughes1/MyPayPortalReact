@@ -58,67 +58,6 @@ export default function AddressForm({ formData, handleChange }) {
             </section>
         </div>
 
-        // <div className="container mt-10">
-        //      <h2>Address</h2>
-        //     <div className="row">
-        //         {/* <div className="col-md-2">
-        //             <label className="form-label">
-        //                 First Name
-        //             </label>
-        //         </div> */}
-        //         <div className="col-md-12">
-
-        //             <input
-        //                 className="form-control"
-        //                 type="text"
-        //             />
-             
-        //         </div>
-        //     </div>  
-        // </div>
-
-        // <div className="col-md-12">
-        //         <section>
-
-        //             <h2>Address</h2>
-
-        //             <input
-        //                 name="address1"
-        //                 placeholder="Street Address"
-        //                 value={formData.address1}
-        //                 onChange={handleChange}
-        //             />
-
-        //             <input
-        //                 name="address2"
-        //                 placeholder="Apartment"
-        //                 value={formData.address2}
-        //                 onChange={handleChange}
-        //             />
-
-        //             <input
-        //                 name="city"
-        //                 placeholder="City"
-        //                 value={formData.city}
-        //                 onChange={handleChange}
-        //             />
-
-        //             <input
-        //                 name="state"
-        //                 placeholder="State"
-        //                 value={formData.state}
-        //                 onChange={handleChange}
-        //             />
-
-        //             <input
-        //                 name="zipCode"
-        //                 placeholder="Zip Code"
-        //                 value={formData.zipCode}
-        //                 onChange={handleChange}
-        //             />
-
-        //         </section>
-        // </div>
     );
 
 }
