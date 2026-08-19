@@ -55,6 +55,11 @@
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
 }
+.nav-item.dropdown:hover .dropdown-item {
+    display: block;
+    color: lightblue;
+}
+
 .menu-button {
     display: none;
     background: transparent;
@@ -66,7 +71,7 @@
 }
 
 .menu-button:hover {
-    color: #38bdf8;
+    color: #38bdf8; 
     transform: scale(1.1);
 }
 
