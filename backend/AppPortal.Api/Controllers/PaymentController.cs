@@ -5,6 +5,7 @@ using AppPortal.Api.Data;
 using AppPortal.Api.DTOs;
 using AppPortal.Api.Models;
 using AppPortal.Api.DTOs.Integrations;
+using AppPortal.Api.RequestModels;
 
 namespace AppPortal.Api.Controllers;
 
@@ -26,7 +27,6 @@ public class PaymentsController : ControllerBase
         _externalPaymentService = externalPaymentService;
         _logger = logger;
     }
-
 
     // GET:
     // api/payments/customer/1
@@ -80,8 +80,6 @@ public class PaymentsController : ControllerBase
         return Ok(payments);
 
     }
-
-
 
     // GET:
     // api/payments/1
@@ -220,8 +218,6 @@ public class PaymentsController : ControllerBase
             throw;
         }
     }
-
-
 
     // PUT:
     // api/payments/1

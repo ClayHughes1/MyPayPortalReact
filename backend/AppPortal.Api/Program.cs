@@ -170,6 +170,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register your services
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILoanAccountService, LoanAccountService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
 builder.Services.AddScoped<IJwtService, JWTService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AccountService>();

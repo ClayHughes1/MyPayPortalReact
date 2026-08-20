@@ -1,6 +1,6 @@
 using AppPortal.Api.Models;
 
-namespace AppPortal.Api.DTOs;
+namespace AppPortal.Api.RequestModels;
 
 public class PaymentRequest
 {
