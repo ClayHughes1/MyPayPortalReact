@@ -71,7 +71,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore External API dependencies
-        run: dotnet restore ./APPPPortal.ExternalApi/APPPPortal.ExternalApi.csproj
+        run: dotnet restore ./APPPortal.ExternalApi/APPPPortal.ExternalApi.csproj
 
       - name: Build External API
-        run: dotnet build ./APPPPortal.ExternalApi/APPPPortal.ExternalApi.csproj --configuration Release --no-restore
+        run: dotnet build ./APPPortal.ExternalApi/APPPPortal.ExternalApi.csproj --configuration Release --no-restore
