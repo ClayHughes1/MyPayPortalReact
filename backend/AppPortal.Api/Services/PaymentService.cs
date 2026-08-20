@@ -99,4 +99,14 @@ public class PaymentService : IPaymentService
 
         return true;
     }
+
+    public async Task<IEnumerable<Payment>> GetByCustomerId(int customerId)
+    {
+        return await _context.Payments
+            .Include(p => p.LoanAccount)
+            .Where(p =>
+                p.LoanAccount != null &&
+                p.LoanAccount.CustomerId == customerId)
+            .ToListAsync();
+    }
 }

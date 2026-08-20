@@ -121,27 +121,24 @@ export default function Navbar() {
                     </li>
                 )}
 
-                {/* <li>
-                    <NavLink to="/login" onClick={closeMenu}>
-                        Login
-                    </NavLink>
-                </li> */}
+ 
 
                 <li>
                     <button
                         type="button"
-                        className="nav-link"
+                        className="nav-link ml-4"
                         onClick={handleLoginLogout}
                     >
                         {isLoggedIn ? "Log Out" : "Login"}
                     </button>
                 </li>
-
-                <li>
-                    <NavLink to="/create-account" onClick={closeMenu}>
-                        Create Account
-                    </NavLink>
-                </li>       
+                {!isLoggedIn && (
+                    <li>
+                        <NavLink to="/create-account" onClick={closeMenu}>
+                            Create Account
+                        </NavLink>
+                    </li>  
+                )}
             </ul>
         </nav>
     );

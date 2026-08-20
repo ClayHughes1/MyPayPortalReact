@@ -8,6 +8,8 @@ public interface IPaymentService
 
     Task<Payment?> GetById(int id);
 
+    Task<IEnumerable<Payment>> GetByCustomerId(int customerId);
+
     Task<IEnumerable<Payment>> GetByLoanAccountId(int loanAccountId);
 
     Task<Payment> Create(Payment payment);

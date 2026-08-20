@@ -10,7 +10,7 @@ public class CreatePaymentAccountRequest
 
     public string LenderName { get; set; } = string.Empty;
 
-    public string AccountNumber { get; set; } = string.Empty;
+    public string LoanAccountNumber { get; set; } = string.Empty;
 
     public decimal CurrentBalance { get; set; }
 

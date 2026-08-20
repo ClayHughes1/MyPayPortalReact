@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 using Xunit;
+using AppPortal.Api.Services;
 
 namespace AppPortal.Api.Tests.Controllers
 {
@@ -20,6 +21,7 @@ namespace AppPortal.Api.Tests.Controllers
         private readonly ApplicationDbContext _context;
         private readonly Mock<IExternalPaymentService> _externalPaymentServiceMock;
         private readonly Mock<ILogger<PaymentsController>> _loggerMock;
+        private readonly Mock<IPaymentService>? _paymentServiceMock;
         private readonly PaymentsController _controller;
 
         public PaymentsControllerTest()
@@ -51,6 +53,8 @@ namespace AppPortal.Api.Tests.Controllers
             _loggerMock =
                 new Mock<ILogger<PaymentsController>>();
 
+            _paymentServiceMock = 
+                new Mock<IPaymentService>();
             // ---------------------------------------------------------
             // Controller
             // ---------------------------------------------------------
@@ -58,6 +62,7 @@ namespace AppPortal.Api.Tests.Controllers
             _controller =
                 new PaymentsController(
                     _context,
+                    _paymentServiceMock,
                     _externalPaymentServiceMock.Object,
                     _loggerMock.Object);
         }

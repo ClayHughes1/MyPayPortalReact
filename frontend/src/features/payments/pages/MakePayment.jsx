@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import usePayments from "../hooks/usePayments";
 
 export default function MakePayment() {
+    const paymentAmountRef = useRef(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     console.log("Make a Payment");
 
@@ -19,14 +21,25 @@ export default function MakePayment() {
         useState("");
 
 
+    // const handlePay = (payment) => {
+
+    //     setSelectedPayment(payment);
+
+    //     setPaymentAmount("");
+
+    // };
+
     const handlePay = (payment) => {
-
         setSelectedPayment(payment);
-
         setPaymentAmount("");
-
+        setShowPaymentModal(true);
     };
 
+    useEffect(() => {
+        if (showPaymentModal) {
+            paymentAmountRef.current?.focus();
+        }
+    }, [showPaymentModal]);
 
     const handleCancel = () => {
 
@@ -85,8 +98,6 @@ export default function MakePayment() {
 
             await makePayment(request);
 
-            alert("Payment submitted successfully.");
-
             setSelectedPayment(null);
             setPaymentAmount("");
 
@@ -97,12 +108,6 @@ export default function MakePayment() {
                 "Payment processing failed:",
                 error
             );
-
-            alert(
-                error.message ||
-                "Unable to process payment."
-            );
-
         }
 
     };
@@ -241,136 +246,156 @@ export default function MakePayment() {
             {/* Payment Form */}
 
             {selectedPayment && (
+                <div
+                    className={`modal fade ${showPaymentModal ? "show" : ""}`}
+                    style={{
+                        display: showPaymentModal ? "block" : "none"
+                    }}
+                    tabIndex="-1"
+                    role="dialog"
+                    aria-modal={showPaymentModal}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
 
-                <div className="card mt-4">
+                            <div className="modal-header">
 
-                    <div className="card-body">
-
-                        <h4 className="mb-4">
-                            Make Payment
-                        </h4>
-
-
-                        <form onSubmit={handleSubmit}>
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Loan Vendor
-                                </label>
-
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={
-                                        selectedPayment.lenderName || ""
-                                    }
-                                    disabled
-                                />
-
-                            </div>
-
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Account Number
-                                </label>
-
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={
-                                        selectedPayment.accountNumber || ""
-                                    }
-                                    disabled
-                                />
-
-                            </div>
-
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Current Balance
-                                </label>
-
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={
-                                        `$${Number(
-                                            selectedPayment.currentBalance || 0
-                                        ).toLocaleString(
-                                            "en-US",
-                                            {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            }
-                                        )}`
-                                    }
-                                    disabled
-                                />
-
-                            </div>
-
-
-                            <div className="mb-3">
-
-                                <label className="form-label">
-                                    Payment Amount
-                                </label>
-
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0.01"
-                                    max={
-                                        selectedPayment.currentBalance
-                                    }
-                                    className="form-control"
-                                    value={paymentAmount}
-                                    onChange={(e) =>
-                                        setPaymentAmount(
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Enter payment amount"
-                                    required
-                                />
-
-                            </div>
-
-
-                            <div className="d-flex gap-2">
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-success"
-                                >
-                                    Submit Payment
-                                </button>
+                                <h4 className="modal-title">
+                                    Make Payment
+                                </h4>
 
                                 <button
                                     type="button"
-                                    className="btn btn-secondary"
+                                    className="btn-close"
                                     onClick={handleCancel}
-                                >
-                                    Cancel
-                                </button>
+                                    aria-label="Close"
+                                />
 
                             </div>
 
-                        </form>
+                            <form onSubmit={handleSubmit}>
 
+                                <div className="modal-body">
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+                                            Loan Vendor
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={
+                                                selectedPayment.lenderName || ""
+                                            }
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+                                            Account Number
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={
+                                                selectedPayment.accountNumber || ""
+                                            }
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+                                            Current Balance
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={
+                                                `$${Number(
+                                                    selectedPayment.currentBalance || 0
+                                                ).toLocaleString(
+                                                    "en-US",
+                                                    {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 2
+                                                    }
+                                                )}`
+                                            }
+                                            disabled
+                                        />
+
+                                    </div>
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
+                                            Payment Amount
+                                        </label>
+
+                                        <input
+                                            ref={paymentAmountRef}
+                                            type="number"
+                                            step="0.01"
+                                            min="0.01"
+                                            max={
+                                                selectedPayment.currentBalance
+                                            }
+                                            className="form-control"
+                                            value={paymentAmount}
+                                            onChange={(e) =>
+                                                setPaymentAmount(
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Enter payment amount"
+                                            required
+                                        />
+
+                                    </div>
+
+                                </div>
+
+                                <div className="modal-footer">
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={handleCancel}
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        className="btn btn-success"
+                                    >
+                                        Submit Payment
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
                     </div>
-
                 </div>
-
             )}
 
-        </div>
+
+
+       </div>
 
     );
 
 }
+

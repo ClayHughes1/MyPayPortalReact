@@ -6,13 +6,16 @@ import PaymentForm from "../components/PaymentForm";
 import PaymentList from "../components/PaymentList";
 
 import usePayments from "../hooks/usePayments";
+import LoanAccountEditModal from "../components/LoanAccountEditModal";
 
 export default function PaymentsPage() {
 
     console.log("PaymentsPage");
     const [currentUser, setCurrentUser] = useState(null);
-
-
+    const [editingPayment, setEditingPayment] = useState(null);
+    const [savingLoanAccount, setSavingLoanAccount] =
+        useState(false);
+        
     const {
 
         payments,
@@ -61,6 +64,28 @@ export default function PaymentsPage() {
 
 
     }, []);
+
+    const handleEditLoanAccount = (payment) => {
+        console.log("Edit clicked:", payment);
+        setEditingPayment(payment);
+    };
+
+    const handleSaveLoanAccount = async (
+        loanAccountId,
+        loanAccountData
+    ) => {
+
+        console.log(
+            "Loan Account ID:",
+            loanAccountId
+        );
+
+        console.log(
+            "Loan Account Data:",
+            loanAccountData
+        );
+
+    };
 
     return (
 
@@ -164,7 +189,7 @@ export default function PaymentsPage() {
                         <div className="card-body">
 
 
-                            <PaymentList
+                            {/* <PaymentList
 
                                 payments={payments}
 
@@ -174,11 +199,24 @@ export default function PaymentsPage() {
 
                                 onUpdate={updatePayment}
 
+                            /> */}
+
+                            <PaymentList
+                                payments={payments}
+                                loading={loading}
+                                onDelete={deletePayment}
+                                onUpdate={handleEditLoanAccount}
                             />
-
-
                         </div>
 
+                        {editingPayment && (
+                            <LoanAccountEditModal
+                                payment={editingPayment}
+                                onSave={handleSaveLoanAccount}
+                                onClose={() => setEditingPayment(null)}
+                                saving={savingLoanAccount}
+                            />
+                        )}
 
                     </div>
 
