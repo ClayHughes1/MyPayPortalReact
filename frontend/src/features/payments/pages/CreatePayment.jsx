@@ -3,7 +3,6 @@ import PaymentForm from "../components/PaymentForm";
 import usePayments from "../hooks/usePayments";
 
 export default function CreatePayment() {
-    console.log("PaymentsPage");
     const [currentUser, setCurrentUser] = useState(null);
 
     const {
@@ -17,11 +16,8 @@ export default function CreatePayment() {
     
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        console.log("Stored user:", storedUser);
         if (storedUser) {
             const user = JSON.parse(storedUser);
-            console.log("Parsed user:", user);
-            console.log("User Id:", user.id);
             setCurrentUser(user);
         }
         else {
@@ -30,7 +26,6 @@ export default function CreatePayment() {
     }, []);
 
     const handleCreatePayment = (paymentData) => {
-        console.log("Payment data received:", paymentData);
         const payload = {
 
             ...paymentData,
@@ -38,7 +33,6 @@ export default function CreatePayment() {
             customerId: currentUser?.id
 
         };
-        console.log("Final payment payload:", payload);
         createPayment(payload);
     };
 
@@ -55,27 +49,6 @@ export default function CreatePayment() {
                 <p>
                     Create your MyPay payment.
                 </p>
-    
-    
-                {
-                    currentUser &&
-    
-                    <div className="alert alert-info">
-    
-                        Logged in user:
-    
-                        {" "}
-    
-                        {currentUser.firstName} {currentUser.lastName}
-    
-                        {" "}
-    
-                        (Customer ID: {currentUser.id})
-    
-                    </div>
-    
-                }
-    
     
     
                 {

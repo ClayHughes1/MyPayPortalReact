@@ -30,8 +30,6 @@ export default function usePayments(){
 
     const customerId = user?.id;
 
-    console.log("customer id in",customerId);
-
     useEffect(() => {
 
         if (!customerId) {
@@ -65,9 +63,7 @@ export default function usePayments(){
 
         }
         catch(err){
-            console.log("Error in the usePayments",err);
             setError(err.message);
-
         }
         finally{
 
@@ -80,15 +76,7 @@ export default function usePayments(){
     const createPayment = async (data) => {
 
         try {
-
-            console.log("Payment data received:", data);
-
             const request = new PaymentRequest(data);
-
-            console.log(
-                "Request object after DTO mapping:",
-                request
-            );
 
             await paymentService.create(request);
 
@@ -142,11 +130,6 @@ export default function usePayments(){
 
             const request =
                 new MakePaymentRequest(data);
-
-            console.log(
-                "Make Payment request:",
-                request
-            );
 
             const response =
                 await paymentService.makePayment(request);

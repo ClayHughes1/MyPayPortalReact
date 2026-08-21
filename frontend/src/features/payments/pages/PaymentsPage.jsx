@@ -10,7 +10,6 @@ import LoanAccountEditModal from "../components/LoanAccountEditModal";
 
 export default function PaymentsPage() {
 
-    console.log("PaymentsPage");
     const [currentUser, setCurrentUser] = useState(null);
     const [editingPayment, setEditingPayment] = useState(null);
     const [savingLoanAccount, setSavingLoanAccount] =
@@ -39,20 +38,9 @@ export default function PaymentsPage() {
 
         const storedUser = localStorage.getItem("user");
 
-
-        console.log("Stored user:", storedUser);
-
-
         if (storedUser) {
 
             const user = JSON.parse(storedUser);
-
-
-            console.log("Parsed user:", user);
-
-            console.log("User Id:", user.id);
-
-
             setCurrentUser(user);
 
         }
@@ -66,7 +54,6 @@ export default function PaymentsPage() {
     }, []);
 
     const handleEditLoanAccount = (payment) => {
-        console.log("Edit clicked:", payment);
         setEditingPayment(payment);
     };
 
@@ -74,16 +61,6 @@ export default function PaymentsPage() {
         loanAccountId,
         loanAccountData
     ) => {
-
-        console.log(
-            "Loan Account ID:",
-            loanAccountId
-        );
-
-        console.log(
-            "Loan Account Data:",
-            loanAccountData
-        );
 
     };
 
@@ -98,30 +75,8 @@ export default function PaymentsPage() {
 
 
             <p>
-                Manage your MyPay payment accounts.
+                Manage your payment accounts.
             </p>
-
-
-            {
-                currentUser &&
-
-                <div className="alert alert-info">
-
-                    Logged in user:
-
-                    {" "}
-
-                    {currentUser.firstName} {currentUser.lastName}
-
-                    {" "}
-
-                    (Customer ID: {currentUser.id})
-
-                </div>
-
-            }
-
-
 
             {
                 error &&

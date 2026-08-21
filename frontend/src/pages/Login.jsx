@@ -21,7 +21,6 @@ export default function Login(){
  
   // Update state on input change
   const handleChange = (e) => {
-    console.log("handle change");
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -30,8 +29,6 @@ export default function Login(){
   };
 
   const handleSubmit = async (e) => {
-    console.log("handle submit");
-
       e.preventDefault();
 
       setLoading(true);
@@ -43,7 +40,6 @@ export default function Login(){
               formData.username,
               formData.password
           );
-          console.log(result);
           localStorage.setItem("token", result.token);
 
           localStorage.setItem(

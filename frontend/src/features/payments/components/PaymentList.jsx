@@ -10,7 +10,6 @@ export default function PaymentList({
     onUpdate
 }) {
 
-
     if (loading) {
 
         return (

@@ -6,6 +6,8 @@ public class PaymentResponse
 
     public int? LoanAccountId { get; set; }
 
+    public string? LoanAccountNumber {get;set;}
+
     public string? PaymentDescription { get; set; }
 
     public decimal? PaymentAmount { get; set; }
@@ -24,6 +26,8 @@ public class PaymentResponse
     // Loan Account Information
 
     public string? LoanType { get; set; }
+
+    public string? LoanName { get; set; }
 
     public string? LenderName { get; set; }
 

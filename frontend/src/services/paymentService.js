@@ -24,7 +24,6 @@ const paymentService = {
 
     async getAllPaymentSources()
     {
-        console.log("Getting the  payment sources");
         const response = await fetch(
             `${PaySources_API_URL}`,
             {
@@ -52,7 +51,6 @@ const paymentService = {
 
     async getAll(customerId)
     {
-        console.log("customer id:  ",customerId);
         const response = await fetch(
             `${API_URL}/customer/${customerId}`,
             {
@@ -63,7 +61,6 @@ const paymentService = {
 
 
         const data = await response.json();
-
 
         if(!response.ok)
         {
@@ -191,11 +188,6 @@ const paymentService = {
      */
     async create(payment)
     {
-        console.log(
-            "Creating payment:",
-            JSON.stringify(payment, null, 2)
-        );
-
 
         const response = await fetch(
             API_URL,
@@ -322,11 +314,7 @@ const paymentService = {
 
     async makePayment(payment)
     {
-        console.log(
-            "Making payment:",
-            JSON.stringify(payment, null, 2)
-        );
-
+        console.log("Sending poayment info \n",payment);
         const response = await fetch(
             `${API_URL}/make-payment`,
             {

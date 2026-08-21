@@ -85,6 +85,12 @@ public class PaymentsController : ControllerBase
 
                 LenderName =
                     p.LoanAccount?.LenderName,
+                
+                LoanName= 
+                    p.LoanAccount?.LoanName,
+
+                LoanAccountNumber = 
+                p.LoanAccount?.AccountNumberEncrypted,
 
                 MaskedAccountNumber =
                     p.LoanAccount?.AccountNumberEncrypted,
@@ -475,6 +481,9 @@ public class PaymentsController : ControllerBase
 
                     LoanAccountId =
                         loan.Id,
+
+                    LoanName= 
+                        request.LoanName,
 
                     PaymentAmount =
                         request.PaymentAmount,

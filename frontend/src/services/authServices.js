@@ -3,9 +3,6 @@ const API_URL = "http://localhost:5000/api/auth";
 
 export async function login(username, password) {
 
-    console.log(`${API_URL}/login`);
-
-
     const response = await fetch(
         `${API_URL}/login`,
         {
@@ -21,10 +18,6 @@ export async function login(username, password) {
             })
         }
     );
-
-
-    console.log("Response", response);
-
 
     const data =
         await response.json();
@@ -76,22 +69,20 @@ export function isLoggedIn() {
         const expirationTime =
             payload.exp * 1000;
 
-        console.log(
-            "JWT expiration:",
-            new Date(expirationTime)
-        );
+        // console.log(
+        //     "JWT expiration:",
+        //     new Date(expirationTime)
+        // );
 
-        console.log(
-            "Current time:",
-            new Date()
-        );
+        // console.log(
+        //     "Current time:",
+        //     new Date()
+        // );
 
         if (
             !expirationTime ||
             Date.now() >= expirationTime
         ) {
-
-            console.log("JWT HAS EXPIRED");
 
             logout();
 

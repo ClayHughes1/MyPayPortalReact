@@ -6,6 +6,8 @@ public class ExternalPaymentRequest
 
     public int LoanAccountId { get; set; }
 
+    public string? LoanName {get;set;}
+    
     public decimal PaymentAmount { get; set; }
 
     public string PaymentType { get; set; } = string.Empty;

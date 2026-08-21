@@ -3,9 +3,8 @@ import usePayments from "../hooks/usePayments";
 
 export default function MakePayment() {
     const paymentAmountRef = useRef(null);
+    const loanNameRef = useRef(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-
-    console.log("Make a Payment");
 
     const {
         payments,
@@ -14,12 +13,17 @@ export default function MakePayment() {
         makePayment
     } = usePayments();
 
+    // console.log("Selected Payment: \n",payments);
+
+
     const [selectedPayment, setSelectedPayment] =
         useState(null);
 
     const [paymentAmount, setPaymentAmount] =
         useState("");
 
+   const [loanName, setLoanName] =
+        useState("");
 
     // const handlePay = (payment) => {
 
@@ -31,6 +35,12 @@ export default function MakePayment() {
 
     const handlePay = (payment) => {
         setSelectedPayment(payment);
+
+        console.log("Selected Payment: \n",payment);
+        setLoanName(payment.loanName || "");
+        console.log("Selected Payment: \n",selectedPayment);
+
+
         setPaymentAmount("");
         setShowPaymentModal(true);
     };
@@ -46,6 +56,8 @@ export default function MakePayment() {
         setSelectedPayment(null);
 
         setPaymentAmount("");
+
+        setLoanName("");
 
     };
 
@@ -86,21 +98,19 @@ export default function MakePayment() {
                 paymentAmount:
                     Number(paymentAmount),
 
+                loanName: 
+                    loanName,
+
                 paymentDate:
                     new Date().toISOString()
 
             };
 
-            console.log(
-                "Submitting payment:",
-                request
-            );
-
             await makePayment(request);
 
             setSelectedPayment(null);
             setPaymentAmount("");
-
+            setLoanName("");
         }
         catch (error) {
 
@@ -297,14 +307,60 @@ export default function MakePayment() {
                                     <div className="mb-3">
 
                                         <label className="form-label">
+                                            Loan Name
+                                        </label>
+
+                                        <input
+                                            ref={loanNameRef}
+                                            type="text"
+                                            className="form-control"
+                                            value={loanName}
+                                            onChange={(e) =>
+                                                setLoanName(
+                                                    e.target.value
+                                                )
+                                            }
+                                            disabled
+                                        />
+
+                                        {/* <input
+                                            ref={loanNameRef}
+                                            type="text"
+                                            className="form-control"
+                                            value={selectedPayment.loanName}
+                                            onChange={(e) =>
+                                                setLoanName(
+                                                    e.target.value
+                                                )
+                                            }
+                                        /> */}
+
+                                    </div>
+
+
+                                    <div className="mb-3">
+
+                                        <label className="form-label">
                                             Account Number
                                         </label>
+
+                                        {/* <input
+                                            type="text"
+                                            className="form-control"
+                                            value={
+                                                selectedPayment.loanAccountNumber || ""
+                                            }
+                                            disabled
+                                        /> */}
+
 
                                         <input
                                             type="text"
                                             className="form-control"
                                             value={
-                                                selectedPayment.accountNumber || ""
+                                                selectedPayment.loanAccountNumber
+                                                    ? `****${selectedPayment.loanAccountNumber.slice(-4)}`
+                                                    : ""
                                             }
                                             disabled
                                         />

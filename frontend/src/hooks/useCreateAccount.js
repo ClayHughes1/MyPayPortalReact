@@ -19,16 +19,10 @@ export default function useCreateAccount() {
         formData,
         onSuccess
     ) => {
-
-        console.log("HOOK CREATE ACCOUNT FIRED");
-        console.log(formData);
-
-
         setLoading(true);
         setError("");
         setErrors({});
 
-console.log("AFTER SETS");
         try {
 
             if (
@@ -47,9 +41,6 @@ console.log("AFTER SETS");
 
             const validationErrors =
                 validateCreateAccount(formData);
-console.log( Object.keys(validationErrors).length);
-console.log(validationErrors);
-
 
             if (
                 Object.keys(validationErrors).length > 0
@@ -93,39 +84,17 @@ console.log(validationErrors);
 
             };
 
-
-            console.log("POSTING:");
-            console.log(request);
-
-
             const result =
                 await accountService.create(request);
-
-
-            console.log("API RESPONSE:");
-            console.log(result);
-
 
             if(onSuccess)
             {
                 onSuccess();
             }
-
-
         }
         catch(err)
         {
-
-            console.error(
-                "CREATE ACCOUNT ERROR",
-                err
-            );
-
-            setError(
-                err.message ??
-                "Unable to create account."
-            );
-
+            setError(err.message ??"Unable to create account.");
         }
         finally
         {

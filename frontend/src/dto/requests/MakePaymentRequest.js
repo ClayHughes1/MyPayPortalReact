@@ -10,6 +10,9 @@ class MakePaymentRequest {
         this.paymentAmount =
             data.paymentAmount || 0;
 
+        this.loanName = 
+              data.loanName || "";
+
         this.paymentDate =
             data.paymentDate ||
             new Date().toISOString();

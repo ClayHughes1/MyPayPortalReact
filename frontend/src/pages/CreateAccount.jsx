@@ -158,41 +158,31 @@ export default function CreateAccount() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    try {
-        console.log("FORM SUBMIT FIRED");
-        console.log(
-            "PASSWORD:",
-            formData.password
-        );
-
-        if (formData.accountNumber !== formData.confirmAccountNumber) {
-            console.log("They are the same");
-            // setErrors({
-            //         accountNumber:
-            //             "Account numbers do not match."
-            //     });
-
+        try {
+    
+            if (formData.accountNumber !== formData.confirmAccountNumber) {
+                setErrors({accountNumber:"Account numbers do not match."});
                 return;
-        }
-
-        await createAccount(
-
-            formData,
-
-            () => {
-
-                setFormData(initialState);
-
-                navigate("/");
-
             }
 
-        );
-    }
-    catch(e)
-    {
-        console.log("Error"+e);
-    }
+            await createAccount(
+
+                formData,
+
+                () => {
+
+                    setFormData(initialState);
+
+                    navigate("/");
+
+                }
+
+            );
+        }
+        catch(e)
+        {
+            setErrors("An error occurred trying to create an account\n ",e);
+        }
 
     };
 
@@ -236,9 +226,7 @@ export default function CreateAccount() {
                             <div className="card-body">
 
                                 <form 
-                                // onSubmit={handleSubmit}
                                     onSubmit={(e) => {
-                                    console.log("FORM SUBMIT EVENT FIRED");
                                     handleSubmit(e);
                                 }}
                                 >

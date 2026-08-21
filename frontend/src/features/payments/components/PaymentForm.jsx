@@ -1399,12 +1399,6 @@ export default function PaymentForm() {
 
         try {
 
-            console.log(
-                "Payment data received:",
-                paymentData,
-                "      customer id",customerId
-            );
-
             if (!customerId || customerId <= 0) {
 
                 setSubmitError(
@@ -1428,13 +1422,6 @@ export default function PaymentForm() {
                 ...paymentData,
                 customerId
             };
-
-
-            console.log(
-                "Final payment payload:",
-                payload
-            );
-
 
             /*
             * createPayment() in usePayments handles:
