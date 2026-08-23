@@ -266,6 +266,65 @@ export default function Navbar() {
 
                     )}
 
+                    {/* ================================
+                        LOANS
+                    ================================= */}
+                    {isLoggedIn && (
+
+                        <li className="nav-item dropdown">
+
+                            <button
+                                className="nav-link dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                Loans
+                            </button>
+
+
+                            <ul className="dropdown-menu">
+
+                                <li>
+                                    <NavLink
+                                        to="/loans"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Loans List
+                                    </NavLink>
+                                </li>
+
+
+                                <li>
+                                    <NavLink
+                                        to="/loans/createloan"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Create A Loan
+                                    </NavLink>
+                                </li>
+
+
+                                {/* <li>
+                                    <NavLink
+                                        to="/loans/editloan"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Edit A Loan
+                                    </NavLink>
+                                </li> */}
+
+                            </ul>
+
+                        </li>
+
+                    )}
+
+
+
 
                     {/* ================================
                         REPORTS

@@ -93,3 +93,5 @@ export const remove = async (id) => {
         throw new Error("Failed to delete loan account.");
     }
 };
+
+// export default loanAccountService;

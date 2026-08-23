@@ -9,7 +9,13 @@ import Login from "../pages/Login";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import CreatePaymentsPage from "../features/payments/pages/CreatePayment";
 import CustomerReports from "../features/reports/pages/ReportPage"; 
-import MakeAPayment  from "../features/payments/pages/MakePayment" ;
+import MakeAPayment  from "../features/payments/pages/MakePayment";
+import CreateLoanAccount from "../features/loans/pages/CreateLoanAccount";
+import LoanPage from "../features/loans/pages/LoanAccounts";
+import EditLoanAccount from "../features/loans/pages/EditLoanAccount";
+
+
+
 
 export default function AppRoutes() {
     const isAuthenticated = !!localStorage.getItem("token");
@@ -39,19 +45,29 @@ export default function AppRoutes() {
             <Route
                 path="/payments"
                 element={
-
                         <PaymentsPage />
-
                 }
             />
             <Route
                 path="/payments/create"
                 element={<CreatePaymentsPage />}
             />
-
             <Route
                 path="/payments/makeapayment"
                 element={<MakeAPayment />}
+            />
+
+            <Route
+                path="/loans"
+                element={<LoanPage />}
+            />
+            <Route
+                path="/loans/createloan"
+                element={<CreateLoanAccount />}
+            />
+            <Route
+                path="/loans/editloan"
+                element={<EditLoanAccount />}
             />
 
             <Route
