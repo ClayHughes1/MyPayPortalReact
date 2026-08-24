@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import paymentService from "../../../services/paymentService";
 import usePayments from "../hooks/usePayments"
+import eyeIcon from "../../../assets/icons/eye.svg";
+import eyeSlashIcon from "../../../assets/icons/eye-slash.svg";
 
 const initialState = {
     loanType: "Auto Loan",
@@ -110,6 +112,11 @@ const achTestState = {
 };
 
 export default function PaymentForm() {
+    const [showCvv, setShowCvv] = useState(false);
+    const [showCCNumber, setShowCCNumber] = useState(false);
+    const [showBANumber, setShowBANumber] = useState(false);
+    const [showLANumber, setShowLANumber] = useState(false);
+    const [showCLANumber, setShowCLANumber] = useState(false);
 
     const storedUser =
         localStorage.getItem("user");
@@ -787,7 +794,7 @@ export default function PaymentForm() {
             return [
                 {
                     name: "creditcardnumber",
-                    type: "text"
+                    type: "passwo5rd"
                 },
                 {
                     name: "expdate",
@@ -957,8 +964,6 @@ export default function PaymentForm() {
         return Object.keys(newErrors).length === 0;
     };
 
-
-
     /*
      * ---------------------------------------------------------
      * Clear validation state for inactive payment type
@@ -1012,7 +1017,6 @@ export default function PaymentForm() {
         });
     };
 
-
     /*
      * ---------------------------------------------------------
      * Handle Payment Type Change
@@ -1060,7 +1064,6 @@ export default function PaymentForm() {
             paymentType: true
         }));
     };
-
 
     /*
      * ---------------------------------------------------------
@@ -1588,11 +1591,11 @@ export default function PaymentForm() {
             onSubmit={handleSubmit}
         >
 
-    {submitError && (
-        <div className="alert alert-danger mb-4">
-            {submitError}
-        </div>
-    )}
+            {submitError && (
+                <div className="alert alert-danger mb-4">
+                    {submitError}
+                </div>
+            )}
 
             <h4>
                 Loan Information
@@ -1671,38 +1674,75 @@ export default function PaymentForm() {
 
 
             {/* Loan Account Number */}
-            <input
-                type="password"
-                className={`${getInputClass("lnAccountNumber")} mb-1`}
-                name="lnAccountNumber"
-                value={formData.lnAccountNumber}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Loan Account Number"
-                inputMode="numeric"
-                maxLength={30}
-                required
-            />
+           <div className="position-relative">
 
-            {renderError("lnAccountNumber")}
+                <input
+                    type={showLANumber ? "text" : "password"}
+                    className={`${getInputClass("lnAccountNumber")} mb-1`}
+                    name="lnAccountNumber"
+                    value={formData.lnAccountNumber}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Loan Account Number"
+                    inputMode="numeric"
+                    maxLength={30}
+                    required
+                />
 
+                <button
+                    type="button"
+                    onClick={() => setShowLANumber(prev => !prev)}
+                    aria-label={
+                        showLANumber
+                            ? "Hide Bank Account number"
+                            : "Show Bank Account  number"
+                    }
+                    className="cvv-toggle"
+                >
+                    <img
+                        src={showCCNumber ? eyeSlashIcon : eyeIcon}
+                        alt=""
+                    />
+                </button>
+
+
+                {renderError("lnAccountNumber")}
+                </div>
 
             {/* Confirm Loan Account Number */}
-            <input
-                type="password"
-                className={`${getInputClass("lnConfirmAccountNumber")} mb-3`}
-                name="lnConfirmAccountNumber"
-                value={formData.lnConfirmAccountNumber}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Confirm Loan Account Number"
-                inputMode="numeric"
-                maxLength={30}
-                required
-            />
+            <div className="position-relative">
 
-            {renderError("lnConfirmAccountNumber")}
+                <input
+                    type={showCLANumber ? "text" : "password"}
+                    className={`${getInputClass("lnConfirmAccountNumber")} mb-3`}
+                    name="lnConfirmAccountNumber"
+                    value={formData.lnConfirmAccountNumber}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Confirm Loan Account Number"
+                    inputMode="numeric"
+                    maxLength={30}
+                    required
+                />
 
+                <button
+                    type="button"
+                    onClick={() => setShowCLANumber(prev => !prev)}
+                    aria-label={
+                        showCLANumber
+                            ? "Hide  Confirm Bank Account number"
+                            : "Show Confirm Bank Account  number"
+                    }
+                    className="cvv-toggle"
+                >
+                    <img
+                        src={showCCNumber ? eyeSlashIcon : eyeIcon}
+                        alt=""
+                    />
+                </button>
+
+                {renderError("lnConfirmAccountNumber")}
+            </div>
 
             <h4>
                 Payment Information
@@ -1859,28 +1899,46 @@ export default function PaymentForm() {
 
 
                             <div className="col-md-12 mb-1">
+                                <div className="position-relative">
 
-                                <input
-                                    className={getInputClass(
+                                    <input
+                                        className={getInputClass(
+                                            "accountNumber"
+                                        )}
+                                        type={showBANumber ? "text" : "password"}
+                                        name="accountNumber"
+                                        placeholder="Account Number"
+                                        value={
+                                            formData.accountNumber
+                                        }
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        inputMode="numeric"
+                                        maxLength={30}
+                                        required
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowBANumber(prev => !prev)}
+                                        aria-label={
+                                            showBANumber
+                                                ? "Hide Bank Account number"
+                                                : "Show Bank Account  number"
+                                        }
+                                        className="cvv-toggle"
+                                    >
+                                        <img
+                                            src={showCCNumber ? eyeSlashIcon : eyeIcon}
+                                            alt=""
+                                        />
+                                    </button>
+
+
+                                    {renderError(
                                         "accountNumber"
                                     )}
-                                    type="password"
-                                    name="accountNumber"
-                                    placeholder="Account Number"
-                                    value={
-                                        formData.accountNumber
-                                    }
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    inputMode="numeric"
-                                    maxLength={30}
-                                    required
-                                />
-
-                                {renderError(
-                                    "accountNumber"
-                                )}
-
+                                </div>
                             </div>
 
 
@@ -1958,28 +2016,45 @@ export default function PaymentForm() {
                         <>
 
                             <div className="col-md-12 mb-1">
+                                <div className="position-relative">
+                                    <input
+                                        className={getInputClass(
+                                            "creditcardnumber"
+                                        )}
+                                        type={showCCNumber ? "text" : "password"}
+                                        name="creditcardnumber"
+                                        placeholder="Credit Card Number"
+                                        value={
+                                            formData.creditcardnumber
+                                        }
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        inputMode="numeric"
+                                        maxLength={19}
+                                        required
+                                    />
 
-                                <input
-                                    className={getInputClass(
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCCNumber(prev => !prev)}
+                                        aria-label={
+                                            showCCNumber
+                                                ? "Hide Credit Card number"
+                                                : "Show Credit Card number"
+                                        }
+                                        className="cvv-toggle"
+                                    >
+                                        <img
+                                            src={showCCNumber ? eyeSlashIcon : eyeIcon}
+                                            alt=""
+                                        />
+                                    </button>
+
+
+                                    {renderError(
                                         "creditcardnumber"
                                     )}
-                                    type="text"
-                                    name="creditcardnumber"
-                                    placeholder="Credit Card Number"
-                                    value={
-                                        formData.creditcardnumber
-                                    }
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    inputMode="numeric"
-                                    maxLength={19}
-                                    required
-                                />
-
-                                {renderError(
-                                    "creditcardnumber"
-                                )}
-
+                                </div>
                             </div>
 
 
@@ -2008,22 +2083,39 @@ export default function PaymentForm() {
 
                             <div className="col-md-6 mb-4">
 
-                                <input
-                                    className={getInputClass(
-                                        "cvvcode"
-                                    )}
-                                    type="password"
-                                    name="cvvcode"
-                                    placeholder="CVV Code"
-                                    value={
-                                        formData.cvvcode
-                                    }
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    inputMode="numeric"
-                                    maxLength={4}
-                                    required
-                                />
+                                <div className="position-relative">
+
+                                    <input
+                                        className={getInputClass("cvvcode")}
+                                        type={showCvv ? "text" : "password"}
+                                        name="cvvcode"
+                                        placeholder="CVV Code"
+                                        value={formData.cvvcode}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        inputMode="numeric"
+                                        maxLength={4}
+                                        required
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCvv(prev => !prev)}
+                                        aria-label={
+                                            showCvv
+                                                ? "Hide CVV code"
+                                                : "Show CVV code"
+                                        }
+                                        className="cvv-toggle"
+                                    >
+                                        <img
+                                            src={showCvv ? eyeSlashIcon : eyeIcon}
+                                            alt=""
+                                        />
+                                    </button>
+
+                                </div>
+
 
                                 {renderError(
                                     "cvvcode"

@@ -58,6 +58,7 @@ export default function Navbar() {
         } else {
 
             setUser(null);
+            navigate("/login");
 
         }
 
@@ -115,7 +116,6 @@ export default function Navbar() {
      * This follows the original working implementation.
      */
     const handleLoginLogout = () => {
-
         if (isLoggedIn) {
 
             // Log out

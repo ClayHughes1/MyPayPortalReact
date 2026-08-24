@@ -1,22 +1,38 @@
 import { jsPDF } from "jspdf";
 
-const API_URL = "http://localhost:5000/api/reports";
+
+const API_URL =
+    "http://localhost:5000/api/reports";
+
+
+// =========================================================
+// AUTH HEADERS
+// =========================================================
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+
+    const token =
+        localStorage.getItem("token");
 
     return {
-        "Content-Type": "application/json",
+
+        "Content-Type":
+            "application/json",
+
         ...(token && {
-            Authorization: `Bearer ${token}`
+
+            Authorization:
+                `Bearer ${token}`
+
         })
+
     };
 };
 
 
-// ---------------------------------------------------------
-// Get report data from API
-// ---------------------------------------------------------
+// =========================================================
+// GENERIC REPORT DATA
+// =========================================================
 
 const getReportData = async (
     endpoint,
@@ -25,35 +41,50 @@ const getReportData = async (
     dateTo
 ) => {
 
-    const queryParams = new URLSearchParams({
-        customerId,
-        dateFrom,
-        dateTo
-    });
+    const queryParams =
+        new URLSearchParams({
 
-    const response = await fetch(
-        `${API_URL}/${endpoint}/${customerId}?${queryParams}`,
-        {
-            method: "GET",
-            headers: getAuthHeaders()
-        }
-    );
+            customerId,
+            dateFrom,
+            dateTo
+
+        });
+
+
+    const response =
+        await fetch(
+
+            `${API_URL}/${endpoint}/${customerId}?${queryParams}`,
+
+            {
+                method: "GET",
+                headers: getAuthHeaders()
+            }
+
+        );
+
 
     if (!response.ok) {
-        const errorText = await response.text();
+
+        const errorText =
+            await response.text();
 
         throw new Error(
-            errorText || "Failed to retrieve report data."
+
+            errorText ||
+            "Failed to retrieve report data."
+
         );
     }
+
 
     return await response.json();
 };
 
 
-// ---------------------------------------------------------
-// Existing Payment Report API call
-// ---------------------------------------------------------
+// =========================================================
+// PAYMENT REPORT
+// =========================================================
 
 const getPaymentReport = async (
     customerId,
@@ -61,35 +92,50 @@ const getPaymentReport = async (
     dateTo
 ) => {
 
-    const queryParams = new URLSearchParams({
-        customerId,
-        dateFrom,
-        dateTo
-    });
+    const queryParams =
+        new URLSearchParams({
 
-    const response = await fetch(
-        `${API_URL}/payments/${customerId}/range?${queryParams}`,
-        {
-            method: "GET",
-            headers: getAuthHeaders()
-        }
-    );
+            customerId,
+            dateFrom,
+            dateTo
+
+        });
+
+
+    const response =
+        await fetch(
+
+            `${API_URL}/payments/${customerId}/range?${queryParams}`,
+
+            {
+                method: "GET",
+                headers: getAuthHeaders()
+            }
+
+        );
+
 
     if (!response.ok) {
-        const errorText = await response.text();
+
+        const errorText =
+            await response.text();
 
         throw new Error(
-            errorText || "Failed to retrieve payment report."
+
+            errorText ||
+            "Failed to retrieve payment report."
+
         );
     }
+
 
     return await response.json();
 };
 
 
-// ---------------------------------------------------------
-// PDF Header
-// ---------------------------------------------------------
+// =========================================================
+// PDF HEADER
+// =========================================================
 
 const addReportHeader = (
     doc,
@@ -110,6 +156,7 @@ const addReportHeader = (
         }
     );
 
+
     doc.setFontSize(10);
 
     doc.text(
@@ -117,6 +164,7 @@ const addReportHeader = (
         20,
         32
     );
+
 
     doc.text(
         `Customer ID: ${customerId}`,
@@ -126,15 +174,21 @@ const addReportHeader = (
 };
 
 
-// ---------------------------------------------------------
-// PDF Footer
-// ---------------------------------------------------------
+// =========================================================
+// PDF FOOTER
+// =========================================================
 
 const addReportFooter = (doc) => {
 
-    const pageCount = doc.getNumberOfPages();
+    const pageCount =
+        doc.getNumberOfPages();
 
-    for (let page = 1; page <= pageCount; page++) {
+
+    for (
+        let page = 1;
+        page <= pageCount;
+        page++
+    ) {
 
         doc.setPage(page);
 
@@ -162,13 +216,17 @@ const generatePaymentHistoryReport = async (
     dateTo
 ) => {
 
-    const reportData = await getPaymentReport(
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getPaymentReport(
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -178,24 +236,57 @@ const generatePaymentHistoryReport = async (
         dateTo
     );
 
+
     let yPosition = 55;
+
 
     doc.setFontSize(11);
     doc.setFont(undefined, "bold");
 
-    doc.text("Payment Date", 20, yPosition);
-    doc.text("Loan Type", 55, yPosition);
-    doc.text("Loan Name", 90, yPosition);
-    doc.text("Amount", 145, yPosition);
-    doc.text("Status", 175, yPosition);
+
+    doc.text(
+        "Payment Date",
+        20,
+        yPosition
+    );
+
+    doc.text(
+        "Loan Type",
+        55,
+        yPosition
+    );
+
+    doc.text(
+        "Loan Name",
+        90,
+        yPosition
+    );
+
+    doc.text(
+        "Amount",
+        145,
+        yPosition
+    );
+
+    doc.text(
+        "Status",
+        175,
+        yPosition
+    );
+
 
     doc.setFont(undefined, "normal");
 
     yPosition += 8;
 
-    const payments = Array.isArray(reportData)
-        ? reportData
-        : reportData.payments || [];
+
+    const payments =
+        Array.isArray(reportData)
+
+            ? reportData
+
+            : reportData.payments || [];
+
 
     payments.forEach((payment) => {
 
@@ -205,44 +296,117 @@ const generatePaymentHistoryReport = async (
 
             yPosition = 20;
 
+
             doc.setFontSize(11);
             doc.setFont(undefined, "bold");
 
-            doc.text("Payment Date", 20, yPosition);
-            doc.text("Loan Type", 55, yPosition);
-            doc.text("Loan Name", 90, yPosition);
-            doc.text("Amount", 145, yPosition);
-            doc.text("Status", 175, yPosition);
+
+            doc.text(
+                "Payment Date",
+                20,
+                yPosition
+            );
+
+            doc.text(
+                "Loan Type",
+                55,
+                yPosition
+            );
+
+            doc.text(
+                "Loan Name",
+                90,
+                yPosition
+            );
+
+            doc.text(
+                "Amount",
+                145,
+                yPosition
+            );
+
+            doc.text(
+                "Status",
+                175,
+                yPosition
+            );
+
 
             doc.setFont(undefined, "normal");
 
             yPosition += 8;
         }
 
-        const paymentDate = payment.paymentDate
-            ? new Date(payment.paymentDate).toLocaleDateString()
-            : "";
 
-        const loanType = payment.loanType || "";
+        const paymentDate =
+            payment.paymentDate
 
-        const loanName = payment.loanName || "";
+                ? new Date(
+                    payment.paymentDate
+                ).toLocaleDateString()
 
-        const amount = payment.paymentAmount != null
-            ? `$${Number(payment.paymentAmount).toFixed(2)}`
-            : "$0.00";
+                : "";
 
-        const status = payment.status || "";
 
-        doc.text(paymentDate, 20, yPosition);
-        doc.text(loanType, 55, yPosition);
-        doc.text(loanName, 90, yPosition);
-        doc.text(amount, 145, yPosition);
-        doc.text(status, 175, yPosition);
+        const loanType =
+            payment.loanType || "";
+
+
+        const loanName =
+            payment.loanName || "";
+
+
+        const amount =
+            payment.paymentAmount != null
+
+                ? `$${Number(
+                    payment.paymentAmount
+                ).toFixed(2)}`
+
+                : "$0.00";
+
+
+        const status =
+            payment.status || "";
+
+
+        doc.text(
+            paymentDate,
+            20,
+            yPosition
+        );
+
+        doc.text(
+            loanType,
+            55,
+            yPosition
+        );
+
+        doc.text(
+            loanName,
+            90,
+            yPosition
+        );
+
+        doc.text(
+            amount,
+            145,
+            yPosition
+        );
+
+        doc.text(
+            status,
+            175,
+            yPosition
+        );
+
 
         yPosition += 8;
     });
 
+
     addReportFooter(doc);
+
 
     return doc.output("blob");
 };
@@ -258,14 +422,18 @@ const generatePaymentTotalsByLoanTypeReport = async (
     dateTo
 ) => {
 
-    const reportData = await getReportData(
-        "payment-total-by-loan-type",
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getReportData(
+            "payment-total-by-loan-type",
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -275,46 +443,99 @@ const generatePaymentTotalsByLoanTypeReport = async (
         dateTo
     );
 
+
     let yPosition = 55;
+
 
     doc.setFontSize(11);
     doc.setFont(undefined, "bold");
 
-    doc.text("Loan Type", 25, yPosition);
-    doc.text("Payments", 100, yPosition);
-    doc.text("Total Paid", 150, yPosition);
+
+    doc.text(
+        "Loan Type",
+        25,
+        yPosition
+    );
+
+    doc.text(
+        "Payments",
+        100,
+        yPosition
+    );
+
+    doc.text(
+        "Total Paid",
+        150,
+        yPosition
+    );
+
 
     doc.setFont(undefined, "normal");
 
     yPosition += 8;
 
-    const rows = Array.isArray(reportData)
-        ? reportData
-        : reportData.loanTypes || [];
+
+    const rows =
+        Array.isArray(reportData)
+
+            ? reportData
+
+            : reportData.loanTypes || [];
+
 
     rows.forEach((row) => {
 
         if (yPosition > 275) {
+
             doc.addPage();
+
             yPosition = 20;
         }
 
-        const loanType = row.loanType || "";
 
-        const paymentCount = row.paymentCount ?? 0;
+        const loanType =
+            row.loanType || "";
 
-        const totalPaid = row.totalPaid != null
-            ? `$${Number(row.totalPaid).toFixed(2)}`
-            : "$0.00";
 
-        doc.text(loanType, 25, yPosition);
-        doc.text(String(paymentCount), 100, yPosition);
-        doc.text(totalPaid, 150, yPosition);
+        const paymentCount =
+            row.paymentCount ?? 0;
+
+
+        const totalPaid =
+            row.totalPaid != null
+
+                ? `$${Number(
+                    row.totalPaid
+                ).toFixed(2)}`
+
+                : "$0.00";
+
+
+        doc.text(
+            loanType,
+            25,
+            yPosition
+        );
+
+        doc.text(
+            String(paymentCount),
+            100,
+            yPosition
+        );
+
+        doc.text(
+            totalPaid,
+            150,
+            yPosition
+        );
+
 
         yPosition += 8;
     });
 
+
     addReportFooter(doc);
+
 
     return doc.output("blob");
 };
@@ -330,14 +551,18 @@ const generatePaymentTotalsByStatusReport = async (
     dateTo
 ) => {
 
-    const reportData = await getReportData(
-        "payment-total-by-status",
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getReportData(
+            "payment-total-by-status",
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -347,46 +572,99 @@ const generatePaymentTotalsByStatusReport = async (
         dateTo
     );
 
+
     let yPosition = 55;
+
 
     doc.setFontSize(11);
     doc.setFont(undefined, "bold");
 
-    doc.text("Status", 30, yPosition);
-    doc.text("Payments", 100, yPosition);
-    doc.text("Total Amount", 150, yPosition);
+
+    doc.text(
+        "Status",
+        30,
+        yPosition
+    );
+
+    doc.text(
+        "Payments",
+        100,
+        yPosition
+    );
+
+    doc.text(
+        "Total Amount",
+        150,
+        yPosition
+    );
+
 
     doc.setFont(undefined, "normal");
 
     yPosition += 8;
 
-    const rows = Array.isArray(reportData)
-        ? reportData
-        : reportData.statuses || [];
+
+    const rows =
+        Array.isArray(reportData)
+
+            ? reportData
+
+            : reportData.statuses || [];
+
 
     rows.forEach((row) => {
 
         if (yPosition > 275) {
+
             doc.addPage();
+
             yPosition = 20;
         }
 
-        const status = row.status || "";
 
-        const paymentCount = row.paymentCount ?? 0;
+        const status =
+            row.status || "";
 
-        const totalAmount = row.totalAmount != null
-            ? `$${Number(row.totalAmount).toFixed(2)}`
-            : "$0.00";
 
-        doc.text(status, 30, yPosition);
-        doc.text(String(paymentCount), 100, yPosition);
-        doc.text(totalAmount, 150, yPosition);
+        const paymentCount =
+            row.paymentCount ?? 0;
+
+
+        const totalAmount =
+            row.totalAmount != null
+
+                ? `$${Number(
+                    row.totalAmount
+                ).toFixed(2)}`
+
+                : "$0.00";
+
+
+        doc.text(
+            status,
+            30,
+            yPosition
+        );
+
+        doc.text(
+            String(paymentCount),
+            100,
+            yPosition
+        );
+
+        doc.text(
+            totalAmount,
+            150,
+            yPosition
+        );
+
 
         yPosition += 8;
     });
 
+
     addReportFooter(doc);
+
 
     return doc.output("blob");
 };
@@ -402,14 +680,18 @@ const generatePaymentsByMonthReport = async (
     dateTo
 ) => {
 
-    const reportData = await getReportData(
-        "payment-by-month",
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getReportData(
+            "payment-by-month",
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -419,48 +701,137 @@ const generatePaymentsByMonthReport = async (
         dateTo
     );
 
+
     let yPosition = 55;
+
 
     doc.setFontSize(11);
     doc.setFont(undefined, "bold");
 
-    doc.text("Month", 30, yPosition);
-    doc.text("Payments", 100, yPosition);
-    doc.text("Total Paid", 150, yPosition);
+
+    doc.text(
+        "Month",
+        30,
+        yPosition
+    );
+
+    doc.text(
+        "Payments",
+        100,
+        yPosition
+    );
+
+    doc.text(
+        "Total Paid",
+        150,
+        yPosition
+    );
+
 
     doc.setFont(undefined, "normal");
 
     yPosition += 8;
 
-    const rows = Array.isArray(reportData)
-        ? reportData
-        : reportData.months || [];
+
+    const rows =
+        Array.isArray(reportData)
+
+            ? reportData
+
+            : reportData.months || [];
+
 
     rows.forEach((row) => {
 
         if (yPosition > 275) {
+
             doc.addPage();
+
             yPosition = 20;
         }
 
-        const month = row.month || "";
 
-        const paymentCount = row.paymentCount ?? 0;
+        const month =
+            row.month || "";
 
-        const totalPaid = row.totalPaid != null
-            ? `$${Number(row.totalPaid).toFixed(2)}`
-            : "$0.00";
 
-        doc.text(month, 30, yPosition);
-        doc.text(String(paymentCount), 100, yPosition);
-        doc.text(totalPaid, 150, yPosition);
+        const paymentCount =
+            row.paymentCount ?? 0;
+
+
+        const totalPaid =
+            row.totalPaid != null
+
+                ? `$${Number(
+                    row.totalPaid
+                ).toFixed(2)}`
+
+                : "$0.00";
+
+
+        doc.text(
+            month,
+            30,
+            yPosition
+        );
+
+        doc.text(
+            String(paymentCount),
+            100,
+            yPosition
+        );
+
+        doc.text(
+            totalPaid,
+            150,
+            yPosition
+        );
+
 
         yPosition += 8;
     });
 
+
     addReportFooter(doc);
 
+
     return doc.output("blob");
+};
+
+
+// =========================================================
+// PAYMENTS BY MONTH - CHART DATA
+// =========================================================
+//
+// IMPORTANT:
+//
+// getReportData() already calls response.json().
+//
+// Therefore DO NOT do:
+//
+// const response = await getReportData(...);
+// const data = await response.json();
+//
+// getReportData() returns the parsed JSON object/array.
+//
+// =========================================================
+
+const getPaymentsByMonthChart = async (
+    customerId,
+    dateFrom,
+    dateTo
+) => {
+
+    const data =
+        await getReportData(
+            "payment-by-month",
+            customerId,
+            dateFrom,
+            dateTo
+        );
+
+
+    return data;
 };
 
 
@@ -474,14 +845,18 @@ const generatePaymentSummaryReport = async (
     dateTo
 ) => {
 
-    const reportData = await getReportData(
-        "payment-summary",
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getReportData(
+            "payment-summary",
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -491,9 +866,12 @@ const generatePaymentSummaryReport = async (
         dateTo
     );
 
+
     let yPosition = 60;
 
+
     doc.setFontSize(12);
+
 
     doc.text(
         `Total Payments: ${reportData.paymentCount ?? 0}`,
@@ -501,7 +879,9 @@ const generatePaymentSummaryReport = async (
         yPosition
     );
 
+
     yPosition += 12;
+
 
     doc.text(
         `Total Amount Paid: $${Number(
@@ -511,7 +891,9 @@ const generatePaymentSummaryReport = async (
         yPosition
     );
 
+
     yPosition += 12;
+
 
     doc.text(
         `Completed Payments: ${reportData.completedCount ?? 0}`,
@@ -519,7 +901,9 @@ const generatePaymentSummaryReport = async (
         yPosition
     );
 
+
     yPosition += 12;
+
 
     doc.text(
         `Pending Payments: ${reportData.pendingCount ?? 0}`,
@@ -527,7 +911,9 @@ const generatePaymentSummaryReport = async (
         yPosition
     );
 
+
     yPosition += 12;
+
 
     doc.text(
         `Failed Payments: ${reportData.failedCount ?? 0}`,
@@ -535,7 +921,9 @@ const generatePaymentSummaryReport = async (
         yPosition
     );
 
+
     addReportFooter(doc);
+
 
     return doc.output("blob");
 };
@@ -551,14 +939,18 @@ const generatePaymentsByLoanAccountReport = async (
     dateTo
 ) => {
 
-    const reportData = await getReportData(
-        "payment-by-loan-account",
-        customerId,
-        dateFrom,
-        dateTo
-    );
+    const reportData =
+        await getReportData(
+            "payment-by-loan-account",
+            customerId,
+            dateFrom,
+            dateTo
+        );
 
-    const doc = new jsPDF();
+
+    const doc =
+        new jsPDF();
+
 
     addReportHeader(
         doc,
@@ -568,69 +960,881 @@ const generatePaymentsByLoanAccountReport = async (
         dateTo
     );
 
+
     let yPosition = 55;
+
 
     doc.setFontSize(11);
     doc.setFont(undefined, "bold");
 
-    doc.text("Account", 20, yPosition);
-    doc.text("Loan Type", 65, yPosition);
-    doc.text("Payments", 120, yPosition);
-    doc.text("Total Paid", 160, yPosition);
+
+    doc.text(
+        "Account",
+        20,
+        yPosition
+    );
+
+    doc.text(
+        "Loan Type",
+        65,
+        yPosition
+    );
+
+    doc.text(
+        "Payments",
+        120,
+        yPosition
+    );
+
+    doc.text(
+        "Total Paid",
+        160,
+        yPosition
+    );
+
 
     doc.setFont(undefined, "normal");
 
     yPosition += 8;
 
-    const rows = Array.isArray(reportData)
-        ? reportData
-        : reportData.accounts || [];
+
+    const rows =
+        Array.isArray(reportData)
+
+            ? reportData
+
+            : reportData.accounts || [];
+
 
     rows.forEach((row) => {
 
         if (yPosition > 275) {
+
             doc.addPage();
+
             yPosition = 20;
         }
 
-        const account = row.loanAccountId != null
-            ? String(row.loanAccountId)
-            : "";
 
-        const loanType = row.loanType || "";
+        const account =
+            row.loanAccountId != null
 
-        const paymentCount = row.paymentCount ?? 0;
+                ? String(
+                    row.loanAccountId
+                )
 
-        const totalPaid = row.totalPaid != null
-            ? `$${Number(row.totalPaid).toFixed(2)}`
-            : "$0.00";
+                : "";
 
-        doc.text(account, 20, yPosition);
-        doc.text(loanType, 65, yPosition);
-        doc.text(String(paymentCount), 120, yPosition);
-        doc.text(totalPaid, 160, yPosition);
+
+        const loanType =
+            row.loanType || "";
+
+
+        const paymentCount =
+            row.paymentCount ?? 0;
+
+
+        const totalPaid =
+            row.totalPaid != null
+
+                ? `$${Number(
+                    row.totalPaid
+                ).toFixed(2)}`
+
+                : "$0.00";
+
+
+        doc.text(
+            account,
+            20,
+            yPosition
+        );
+
+        doc.text(
+            loanType,
+            65,
+            yPosition
+        );
+
+        doc.text(
+            String(paymentCount),
+            120,
+            yPosition
+        );
+
+        doc.text(
+            totalPaid,
+            160,
+            yPosition
+        );
+
 
         yPosition += 8;
     });
 
+
     addReportFooter(doc);
+
 
     return doc.output("blob");
 };
 
 
-// ---------------------------------------------------------
-// Export service
-// ---------------------------------------------------------
+// =========================================================
+// EXPORT SERVICE
+// =========================================================
 
 const reportService = {
+
     getPaymentReport,
+
     generatePaymentHistoryReport,
+
     generatePaymentTotalsByLoanTypeReport,
+
     generatePaymentTotalsByStatusReport,
+
     generatePaymentsByMonthReport,
+
     generatePaymentSummaryReport,
-    generatePaymentsByLoanAccountReport
+
+    generatePaymentsByLoanAccountReport,
+
+    getPaymentsByMonthChart
+
 };
 
+
 export default reportService;
+
+
+
+// import { jsPDF } from "jspdf";
+
+// const API_URL = "http://localhost:5000/api/reports";
+
+// const getAuthHeaders = () => {
+//     const token = localStorage.getItem("token");
+
+//     return {
+//         "Content-Type": "application/json",
+//         ...(token && {
+//             Authorization: `Bearer ${token}`
+//         })
+//     };
+// };
+
+
+// // ---------------------------------------------------------
+// // Get report data from API
+// // ---------------------------------------------------------
+
+// const getReportData = async (
+//     endpoint,
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const queryParams = new URLSearchParams({
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     });
+
+//     const response = await fetch(
+//         `${API_URL}/${endpoint}/${customerId}?${queryParams}`,
+//         {
+//             method: "GET",
+//             headers: getAuthHeaders()
+//         }
+//     );
+
+//     if (!response.ok) {
+//         const errorText = await response.text();
+
+//         throw new Error(
+//             errorText || "Failed to retrieve report data."
+//         );
+//     }
+
+//     return await response.json();
+// };
+
+
+// // ---------------------------------------------------------
+// // Existing Payment Report API call
+// // ---------------------------------------------------------
+
+// const getPaymentReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const queryParams = new URLSearchParams({
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     });
+
+//     const response = await fetch(
+//         `${API_URL}/payments/${customerId}/range?${queryParams}`,
+//         {
+//             method: "GET",
+//             headers: getAuthHeaders()
+//         }
+//     );
+
+//     if (!response.ok) {
+//         const errorText = await response.text();
+
+//         throw new Error(
+//             errorText || "Failed to retrieve payment report."
+//         );
+//     }
+
+//     return await response.json();
+// };
+
+
+// // ---------------------------------------------------------
+// // PDF Header
+// // ---------------------------------------------------------
+
+// const addReportHeader = (
+//     doc,
+//     title,
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     doc.setFontSize(18);
+
+//     doc.text(
+//         title,
+//         105,
+//         20,
+//         {
+//             align: "center"
+//         }
+//     );
+
+//     doc.setFontSize(10);
+
+//     doc.text(
+//         `Report Period: ${dateFrom} through ${dateTo}`,
+//         20,
+//         32
+//     );
+
+//     doc.text(
+//         `Customer ID: ${customerId}`,
+//         20,
+//         39
+//     );
+// };
+
+
+// // ---------------------------------------------------------
+// // PDF Footer
+// // ---------------------------------------------------------
+
+// const addReportFooter = (doc) => {
+
+//     const pageCount = doc.getNumberOfPages();
+
+//     for (let page = 1; page <= pageCount; page++) {
+
+//         doc.setPage(page);
+
+//         doc.setFontSize(8);
+
+//         doc.text(
+//             `Page ${page} of ${pageCount}`,
+//             105,
+//             290,
+//             {
+//                 align: "center"
+//             }
+//         );
+//     }
+// };
+
+
+// // =========================================================
+// // PAYMENT HISTORY
+// // =========================================================
+
+// const generatePaymentHistoryReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getPaymentReport(
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payment History Report",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 55;
+
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+
+//     doc.text("Payment Date", 20, yPosition);
+//     doc.text("Loan Type", 55, yPosition);
+//     doc.text("Loan Name", 90, yPosition);
+//     doc.text("Amount", 145, yPosition);
+//     doc.text("Status", 175, yPosition);
+
+//     doc.setFont(undefined, "normal");
+
+//     yPosition += 8;
+
+//     const payments = Array.isArray(reportData)
+//         ? reportData
+//         : reportData.payments || [];
+
+//     payments.forEach((payment) => {
+
+//         if (yPosition > 275) {
+
+//             doc.addPage();
+
+//             yPosition = 20;
+
+//             doc.setFontSize(11);
+//             doc.setFont(undefined, "bold");
+
+//             doc.text("Payment Date", 20, yPosition);
+//             doc.text("Loan Type", 55, yPosition);
+//             doc.text("Loan Name", 90, yPosition);
+//             doc.text("Amount", 145, yPosition);
+//             doc.text("Status", 175, yPosition);
+
+//             doc.setFont(undefined, "normal");
+
+//             yPosition += 8;
+//         }
+
+//         const paymentDate = payment.paymentDate
+//             ? new Date(payment.paymentDate).toLocaleDateString()
+//             : "";
+
+//         const loanType = payment.loanType || "";
+
+//         const loanName = payment.loanName || "";
+
+//         const amount = payment.paymentAmount != null
+//             ? `$${Number(payment.paymentAmount).toFixed(2)}`
+//             : "$0.00";
+
+//         const status = payment.status || "";
+
+//         doc.text(paymentDate, 20, yPosition);
+//         doc.text(loanType, 55, yPosition);
+//         doc.text(loanName, 90, yPosition);
+//         doc.text(amount, 145, yPosition);
+//         doc.text(status, 175, yPosition);
+
+//         yPosition += 8;
+//     });
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+
+// // =========================================================
+// // PAYMENT TOTALS BY LOAN TYPE
+// // =========================================================
+
+// const generatePaymentTotalsByLoanTypeReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getReportData(
+//         "payment-total-by-loan-type",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payment Totals By Loan Type",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 55;
+
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+
+//     doc.text("Loan Type", 25, yPosition);
+//     doc.text("Payments", 100, yPosition);
+//     doc.text("Total Paid", 150, yPosition);
+
+//     doc.setFont(undefined, "normal");
+
+//     yPosition += 8;
+
+//     const rows = Array.isArray(reportData)
+//         ? reportData
+//         : reportData.loanTypes || [];
+
+//     rows.forEach((row) => {
+
+//         if (yPosition > 275) {
+//             doc.addPage();
+//             yPosition = 20;
+//         }
+
+//         const loanType = row.loanType || "";
+
+//         const paymentCount = row.paymentCount ?? 0;
+
+//         const totalPaid = row.totalPaid != null
+//             ? `$${Number(row.totalPaid).toFixed(2)}`
+//             : "$0.00";
+
+//         doc.text(loanType, 25, yPosition);
+//         doc.text(String(paymentCount), 100, yPosition);
+//         doc.text(totalPaid, 150, yPosition);
+
+//         yPosition += 8;
+//     });
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+
+// // =========================================================
+// // PAYMENT TOTALS BY STATUS
+// // =========================================================
+
+// const generatePaymentTotalsByStatusReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getReportData(
+//         "payment-total-by-status",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payment Totals By Status",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 55;
+
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+
+//     doc.text("Status", 30, yPosition);
+//     doc.text("Payments", 100, yPosition);
+//     doc.text("Total Amount", 150, yPosition);
+
+//     doc.setFont(undefined, "normal");
+
+//     yPosition += 8;
+
+//     const rows = Array.isArray(reportData)
+//         ? reportData
+//         : reportData.statuses || [];
+
+//     rows.forEach((row) => {
+
+//         if (yPosition > 275) {
+//             doc.addPage();
+//             yPosition = 20;
+//         }
+
+//         const status = row.status || "";
+
+//         const paymentCount = row.paymentCount ?? 0;
+
+//         const totalAmount = row.totalAmount != null
+//             ? `$${Number(row.totalAmount).toFixed(2)}`
+//             : "$0.00";
+
+//         doc.text(status, 30, yPosition);
+//         doc.text(String(paymentCount), 100, yPosition);
+//         doc.text(totalAmount, 150, yPosition);
+
+//         yPosition += 8;
+//     });
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+
+// // =========================================================
+// // PAYMENTS BY MONTH
+// // =========================================================
+
+// const generatePaymentsByMonthReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getReportData(
+//         "payment-by-month",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payments By Month",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 55;
+
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+
+//     doc.text("Month", 30, yPosition);
+//     doc.text("Payments", 100, yPosition);
+//     doc.text("Total Paid", 150, yPosition);
+
+//     doc.setFont(undefined, "normal");
+
+//     yPosition += 8;
+
+//     const rows = Array.isArray(reportData)
+//         ? reportData
+//         : reportData.months || [];
+
+//     rows.forEach((row) => {
+
+//         if (yPosition > 275) {
+//             doc.addPage();
+//             yPosition = 20;
+//         }
+
+//         const month = row.month || "";
+
+//         const paymentCount = row.paymentCount ?? 0;
+
+//         const totalPaid = row.totalPaid != null
+//             ? `$${Number(row.totalPaid).toFixed(2)}`
+//             : "$0.00";
+
+//         doc.text(month, 30, yPosition);
+//         doc.text(String(paymentCount), 100, yPosition);
+//         doc.text(totalPaid, 150, yPosition);
+
+//         yPosition += 8;
+//     });
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+// export async function getPaymentsByMonthChart(
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) {
+
+//     const data = await getReportData(
+//         "payment-by-month",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     return data;
+// }
+
+// // export async function getPaymentsByMonthChart(
+// //     customerId,
+// //     dateFrom,
+// //     dateTo
+// // ) {
+
+// //     const response = await getReportData(
+// //         "payment-by-month",
+// //         customerId,
+// //         dateFrom,
+// //         dateTo
+// //     );
+
+// //     // await fetch(
+// //     //     `${API_URL}/payments-by-month-chart?customerId=${customerId}&dateFrom=${dateFrom}&dateTo=${dateTo}`,
+// //     //     {
+// //     //         method: "GET",
+// //     //         headers: {
+// //     //             Authorization:
+// //     //                 `Bearer ${localStorage.getItem("token")}`
+// //     //         }
+// //     //     }
+// //     // );
+
+// //     const data = await response.json();
+
+// //     if (!response.ok) {
+// //         throw new Error(
+// //             data.message ||
+// //             "Unable to retrieve chart data."
+// //         );
+// //     }
+
+// //     return data;
+// // }
+
+// // =========================================================
+// // PAYMENT SUMMARY
+// // =========================================================
+
+// const generatePaymentSummaryReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getReportData(
+//         "payment-summary",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payment Summary",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 60;
+
+//     doc.setFontSize(12);
+
+//     doc.text(
+//         `Total Payments: ${reportData.paymentCount ?? 0}`,
+//         30,
+//         yPosition
+//     );
+
+//     yPosition += 12;
+
+//     doc.text(
+//         `Total Amount Paid: $${Number(
+//             reportData.totalPaid ?? 0
+//         ).toFixed(2)}`,
+//         30,
+//         yPosition
+//     );
+
+//     yPosition += 12;
+
+//     doc.text(
+//         `Completed Payments: ${reportData.completedCount ?? 0}`,
+//         30,
+//         yPosition
+//     );
+
+//     yPosition += 12;
+
+//     doc.text(
+//         `Pending Payments: ${reportData.pendingCount ?? 0}`,
+//         30,
+//         yPosition
+//     );
+
+//     yPosition += 12;
+
+//     doc.text(
+//         `Failed Payments: ${reportData.failedCount ?? 0}`,
+//         30,
+//         yPosition
+//     );
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+
+// // =========================================================
+// // PAYMENTS BY LOAN ACCOUNT
+// // =========================================================
+
+// const generatePaymentsByLoanAccountReport = async (
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     const reportData = await getReportData(
+//         "payment-by-loan-account",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     const doc = new jsPDF();
+
+//     addReportHeader(
+//         doc,
+//         "Payments By Loan Account",
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+
+//     let yPosition = 55;
+
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+
+//     doc.text("Account", 20, yPosition);
+//     doc.text("Loan Type", 65, yPosition);
+//     doc.text("Payments", 120, yPosition);
+//     doc.text("Total Paid", 160, yPosition);
+
+//     doc.setFont(undefined, "normal");
+
+//     yPosition += 8;
+
+//     const rows = Array.isArray(reportData)
+//         ? reportData
+//         : reportData.accounts || [];
+
+//     rows.forEach((row) => {
+
+//         if (yPosition > 275) {
+//             doc.addPage();
+//             yPosition = 20;
+//         }
+
+//         const account = row.loanAccountId != null
+//             ? String(row.loanAccountId)
+//             : "";
+
+//         const loanType = row.loanType || "";
+
+//         const paymentCount = row.paymentCount ?? 0;
+
+//         const totalPaid = row.totalPaid != null
+//             ? `$${Number(row.totalPaid).toFixed(2)}`
+//             : "$0.00";
+
+//         doc.text(account, 20, yPosition);
+//         doc.text(loanType, 65, yPosition);
+//         doc.text(String(paymentCount), 120, yPosition);
+//         doc.text(totalPaid, 160, yPosition);
+
+//         yPosition += 8;
+//     });
+
+//     addReportFooter(doc);
+
+//     return doc.output("blob");
+// };
+
+// export const getReportChartData = async (
+//     reportType,
+//     customerId,
+//     dateFrom,
+//     dateTo
+// ) => {
+
+//     let endpoint;
+
+//     switch (reportType) {
+
+//         case "payment-by-month":
+//             endpoint = "payment-by-month";
+//             break;
+
+//         case "payment-total-by-loan-type":
+//             endpoint = "payment-total-by-loan-type";
+//             break;
+
+//         case "payment-total-by-status":
+//             endpoint = "payment-total-by-status";
+//             break;
+
+//         case "payment-by-loan-account":
+//             endpoint = "payment-by-loan-account";
+//             break;
+
+//         default:
+//             throw new Error(
+//                 "This report type does not support charts."
+//             );
+//     }
+
+//     return await getReportData(
+//         endpoint,
+//         customerId,
+//         dateFrom,
+//         dateTo
+//     );
+// };
+
+// // ---------------------------------------------------------
+// // Export service
+// // ---------------------------------------------------------
+
+// const reportService = {
+//     getPaymentReport,
+//     generatePaymentHistoryReport,
+//     generatePaymentTotalsByLoanTypeReport,
+//     generatePaymentTotalsByStatusReport,
+//     generatePaymentsByMonthReport,
+//     generatePaymentSummaryReport,
+//     generatePaymentsByLoanAccountReport,
+//     getPaymentsByMonthChart,
+//     getReportChartData
+// };
+
+// export default reportService;
