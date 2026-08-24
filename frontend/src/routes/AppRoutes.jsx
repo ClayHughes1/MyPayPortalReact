@@ -13,9 +13,10 @@ import MakeAPayment  from "../features/payments/pages/MakePayment";
 import CreateLoanAccount from "../features/loans/pages/CreateLoanAccount";
 import LoanPage from "../features/loans/pages/LoanAccounts";
 import EditLoanAccount from "../features/loans/pages/EditLoanAccount";
+import GoogleCallback from "../pages/GoogleCallback";
 
-
-
+// and useSearchParams() retrieves:
+//https://console.cloud.google.com/welcome?project=mypayportal
 
 export default function AppRoutes() {
     const isAuthenticated = !!localStorage.getItem("token");
@@ -94,6 +95,11 @@ export default function AppRoutes() {
                     <PaymentsPage />
                 </ProtectedRoute>
                 }
+            />
+
+            <Route
+                path="/google-callback"
+                element={<GoogleCallback />}
             />
         </Routes>
     );

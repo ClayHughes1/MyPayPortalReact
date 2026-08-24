@@ -172,6 +172,7 @@ builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoanAccountService, LoanAccountService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddSingleton<GoogleLoginStateService>();
 
 builder.Services.AddScoped<IJwtService, JWTService>();
 builder.Services.AddScoped<AuthService>();
@@ -202,9 +203,52 @@ builder.Services.AddCors(options =>
     });
 });
 
+//Old noly for JWT token authentication
 // JWT Authentication
+// builder.Services
+//     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(options =>
+//     {
+//         options.TokenValidationParameters =
+//             new TokenValidationParameters
+//             {
+//                 ValidateIssuer = true,
+//                 ValidateAudience = true,
+//                 ValidateLifetime = true,
+//                 ValidateIssuerSigningKey = true,
+
+//                 ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//                 ValidAudience = builder.Configuration["Jwt:Audience"],
+
+//                 IssuerSigningKey =
+//                     new SymmetricSecurityKey(
+//                         Encoding.UTF8.GetBytes(
+//                             builder.Configuration["Jwt:Key"]!))
+//             };
+//     })
+//     .AddGoogle(options =>
+//     {
+//         options.ClientId =
+//             builder.Configuration["Authentication:Google:ClientId"]!;
+
+//         options.ClientSecret =
+//             builder.Configuration["Authentication:Google:ClientSecret"]!;
+
+//         options.CallbackPath = "/signin-google";
+//     });
+
+//New: includes SSO with Google Identity External
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(options =>
+    {
+        // JWT remains the default authentication mechanism
+        // for your API endpoints.
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters =
@@ -223,6 +267,20 @@ builder.Services
                         Encoding.UTF8.GetBytes(
                             builder.Configuration["Jwt:Key"]!))
             };
+    })
+    .AddCookie("GoogleCookie")
+    .AddGoogle(options =>
+    {
+        options.ClientId =
+            builder.Configuration["Authentication:Google:ClientId"]!;
+
+        options.ClientSecret =
+            builder.Configuration["Authentication:Google:ClientSecret"]!;
+
+        options.CallbackPath = "/signin-google";
+
+        // Google uses this cookie during the OAuth process.
+        options.SignInScheme = "GoogleCookie";
     });
 
 builder.Services.AddAuthorization();

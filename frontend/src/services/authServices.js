@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:5000/api/auth";
-
+const GOOGLE_API_URL =
+    "https://localhost:7000/api/auth";
 
 export async function login(username, password) {
 
@@ -117,4 +118,49 @@ export function logout() {
 
     localStorage.removeItem("isLoggedIn");
 
+}
+
+/*
+ * Google OAuth token request
+ */
+export async function googleLogin(code) {
+
+    const response = await fetch(
+        `${GOOGLE_API_URL}/google-token`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                code
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            "Google login failed"
+        );
+    }
+
+    localStorage.setItem(
+        "token",
+        data.token
+    );
+
+    localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+    );
+
+    localStorage.setItem(
+        "isLoggedIn",
+        "true"
+    );
+
+    return data;
 }

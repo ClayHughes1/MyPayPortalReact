@@ -71,6 +71,10 @@ export default function Login(){
 
   }
 
+  const handleGoogleLogin = () => {
+      window.location.href = "https://localhost:7000/api/auth/google";
+  };
+
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
       <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
@@ -118,6 +122,19 @@ export default function Login(){
 
           </button>
         </form>
+
+                        <div className="text-center my-3">
+                    OR
+                </div>
+
+                <button
+                    type="button"
+                    className="btn btn-outline-dark w-100"
+                    onClick={handleGoogleLogin}
+                >
+                    Sign in with Google
+                </button>
+
       </div>
     </div>
   );

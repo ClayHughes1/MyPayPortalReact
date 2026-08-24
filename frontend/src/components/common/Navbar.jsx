@@ -125,7 +125,7 @@ export default function Navbar() {
             closeMenu();
 
             // Redirect to Login
-            navigate("/");
+            navigate("/dashboard");
 
         } else {
 
