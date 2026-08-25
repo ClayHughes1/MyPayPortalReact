@@ -14,7 +14,7 @@ export default function PaymentList({
 
         return (
 
-            <div className="text-center">
+            <div className="">
 
                 <div
                     className="spinner-border"

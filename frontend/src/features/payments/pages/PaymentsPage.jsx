@@ -90,48 +90,11 @@ export default function PaymentsPage() {
             }
 
 
-
             <div className="row">
+                <div className="col-lg-12">
 
 
-                {/* <div className="col-lg-5">
-
-
-                    <div className="card shadow">
-
-
-                        <div className="card-header">
-
-                            Create AutoPay Payment
-
-                        </div>
-
-
-                        <div className="card-body">
-
-
-                            <PaymentForm
-
-                                onSubmit={handleCreatePayment}
-
-                            />
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div> */}
-
-
-
-
-                <div className="col-lg-7">
-
-
-                    <div className="card shadow">
+                    <div className="card">
 
 
                         <div className="card-header">
@@ -142,20 +105,6 @@ export default function PaymentsPage() {
 
 
                         <div className="card-body">
-
-
-                            {/* <PaymentList
-
-                                payments={payments}
-
-                                loading={loading}
-
-                                onDelete={deletePayment}
-
-                                onUpdate={updatePayment}
-
-                            /> */}
-
                             <PaymentList
                                 payments={payments}
                                 loading={loading}

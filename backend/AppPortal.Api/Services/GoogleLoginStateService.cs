@@ -7,8 +7,8 @@ public class GoogleLoginStateService
 
     public string Create(string token, int userId)
     {
-        
         var code = Guid.NewGuid().ToString("N");
+        Console.WriteLine($"Token:{token}\n UserId: {userId}\n Codel: {code}");
 
         lock (_lock)
         {

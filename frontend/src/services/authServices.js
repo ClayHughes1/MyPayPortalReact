@@ -124,7 +124,7 @@ export function logout() {
  * Google OAuth token request
  */
 export async function googleLogin(code) {
-
+console.log("GOogle LOgin with code value of.  ",code);
     const response = await fetch(
         `${GOOGLE_API_URL}/google-token`,
         {
@@ -137,9 +137,10 @@ export async function googleLogin(code) {
             })
         }
     );
+console.log("Google Login with resppnse  value.  ",response );
 
     const data = await response.json();
-
+console.log("Google Login with data value.  ",data );
     if (!response.ok) {
         throw new Error(
             data.message ||

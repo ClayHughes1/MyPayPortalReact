@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";import { FaBars, FaTimes } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { Navigate } from "react-router-dom";
 import {
@@ -13,12 +12,10 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
-
     const navigate = useNavigate();
 
     // Keep the existing authentication logic.
     const isLoggedIn = checkIsLoggedIn();
-
 
     /*
      * Get the logged-in user's information.
@@ -58,8 +55,6 @@ export default function Navbar() {
         } else {
 
             setUser(null);
-            navigate("/login");
-
         }
 
     }, [isLoggedIn]);
