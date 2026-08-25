@@ -51,6 +51,7 @@ export default function Login(){
           {
             localStorage.setItem("isLoggedIn",true);
           }
+          console.log("In Login JSX Before Navigate");
           navigate("/payments");
 
       }

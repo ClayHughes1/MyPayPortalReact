@@ -20,7 +20,7 @@ import GoogleCallback from "../pages/GoogleCallback";
 
 export default function AppRoutes() {
     const isAuthenticated = !!localStorage.getItem("token");
-
+console.log("in routes page isAuthenticated ",isAuthenticated);
 
     return (
         <Routes>
@@ -86,15 +86,6 @@ export default function AppRoutes() {
             />
 
             <Route path="*" element={<NotFoundPage />} 
-            />
-
-            <Route
-                path="/payments"
-                element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <PaymentsPage />
-                </ProtectedRoute>
-                }
             />
 
             <Route

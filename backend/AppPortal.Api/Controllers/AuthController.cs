@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        Console.Write("In Login method");
+        Console.Write("In Login method\n\n\n");
 
         if (string.IsNullOrWhiteSpace(request.Username) ||
             string.IsNullOrWhiteSpace(request.Password))
@@ -175,7 +175,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Google login code is required.");
         }
-
+Console.WriteLine($"The request code is {request.Code}\n\n\n");
         var state = _googleLoginStateService.Consume(request.Code);
 
         if (state == null)
