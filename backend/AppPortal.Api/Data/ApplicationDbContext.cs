@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using AppPortal.Api.Models;
 using AppPortal.Api.DTOs.Reports;
+using AppPortal.Api.DTOs;
 
 namespace AppPortal.Api.Data;
 
@@ -26,6 +27,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<PaymentSource> PaymentSources { get; set; }
 
     public DbSet<LoanAccount> LoanAccounts { get; set; }
+
+    public DbSet<ApplicationLog> ApplicationLogs { get; set; }
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
@@ -79,6 +82,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Payment>()
             .ToTable("PaymentTransactions");
             
+        modelBuilder.Entity<ApplicationLog>()
+            .ToTable("ApplicationLogs");
+
         base.OnModelCreating(modelBuilder);
     }
 }

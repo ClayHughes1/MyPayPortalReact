@@ -19,6 +19,8 @@ class UpdatePaymentRequest {
         this.paymentAmount = data.paymentAmount || 0;
 
         this.paymentDate = data.paymentDate || "";
+                
+        this.cardType = data.cardType || "";
 
         this.loanNumber = data.loanNumber || "";
 

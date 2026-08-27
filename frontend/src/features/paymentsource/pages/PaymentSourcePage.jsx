@@ -1,29 +1,20 @@
-// src/features/payments/pages/PaymentsPage.jsx
+import React, { useEffect, useState } from "react";
+import PaymentSourceList from "./PaymentSourceList";
 
-import { useEffect, useState } from "react";
-
-import PaymentForm from "../components/PaymentForm";
-import PaymentList from "../components/PaymentList";
-
-import usePayments from "../hooks/usePayments";
-
-import logService from "../../../services/logService";
-
-
-export default function PaymentsPage() {
-
-    const [currentUser, setCurrentUser] =
-        useState(null);
-
+const PaymentSourcePage = () => {
+    const [clientId, setClientId] = useState(null);
+    // const [paymentSources, setPaymentSources] = useState([]);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState("");
 
     const {
-        payments,
+        paymentSources,
         loading,
         error,
-        createPayment,
-        updatePayment,
-        deletePayment
-    } = usePayments();
+        createPaymentSource,
+        updatePaymentSource,
+        deletePaymentSource
+    } = usePaymentSources();
 
 
     // =========================================================
@@ -81,7 +72,9 @@ export default function PaymentsPage() {
                     JSON.parse(storedUser);
 
 
-                setCurrentUser(user);
+                // setCurrentUser(user);
+                setClientId(user.Id);
+
 
 
                 await logService.info(
@@ -129,88 +122,78 @@ export default function PaymentsPage() {
 
     }, []);
 
-
-    // =========================================================
-    // MONITOR PAYMENT DATA
-    // =========================================================
-
     useEffect(() => {
+        const loadPaymentSources = async () => {
+            try {
+                setLoading(true);
+                setError("");
 
-        if (loading) {
+                // TODO:
+                // Replace this with however your application
+                // gets the currently logged-in client's ID.
+                // const loggedInClientId = getLoggedInClientId();
 
-            logService.info(
-                "Payment data loading started.",
-                {
-                    sourceContext:
-                        "PaymentsPage",
-
-                    requestPath:
-                        "/api/payments"
+                if (!loggedInClientId) {
+                    throw new Error("Unable to determine the logged-in client.");
                 }
-            );
 
-            return;
-        }
+                // setClientId(loggedInClientId);
 
+                const response = await fetch(
+                    `/api/payment-sources/client/${loggedInClientId}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
 
-        if (error) {
-
-            logService.logError(
-                "Payment data failed to load.",
-                {
-                    sourceContext:
-                        "PaymentsPage",
-
-                    requestPath:
-                        "/api/payments",
-
-                    exception:
-                        error
+                if (!response.ok) {
+                    throw new Error("Unable to load payment sources.");
                 }
-            );
 
-            return;
-        }
+                const data = await response.json();
 
+                setPaymentSources(data);
+            } catch (err) {
+                console.error("Error loading payment sources:", err);
+                setError(err.message || "Unable to load payment sources.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        if (payments) {
+        loadPaymentSources();
+    }, []);
 
-            logService.info(
-                "Payment data loaded successfully.",
-                {
-                    sourceContext:
-                        "PaymentsPage",
+    if (loading) {
+        return (
+            <div className="payment-source-page">
+                <h1>Payment Sources</h1>
+                <div>Loading payment sources...</div>
+            </div>
+        );
+    }
 
-                    requestPath:
-                        "/api/payments"
-                }
-            );
-        }
+    if (error) {
+        return (
+            <div className="payment-source-page">
+                <h1>Payment Sources</h1>
 
-    }, [
-        loading,
-        error,
-        payments
-    ]);
-
-
-    // =========================================================
-    // RENDER
-    // =========================================================
+                <div className="payment-source-error">
+                    {error}
+                </div>
+            </div>
+        );
+    }
 
     return (
-
         <div className="container-fluid py-4">
-
-            <h1>
-                Payment Management
-            </h1>
-
-
+            <h1>Payment Sources</h1>
             <p>
-                Manage your payments.
+                Manage the payment sources associated with your account.
             </p>
-
 
             {
                 error &&
@@ -221,7 +204,6 @@ export default function PaymentsPage() {
 
                 </div>
             }
-
 
             <div className="row">
 
@@ -235,18 +217,11 @@ export default function PaymentsPage() {
 
                         </div>
 
-
                         <div className="card-body">
 
-                            <PaymentList
-
-                                payments={payments}
-
-                                loading={loading}
-
-                                onDelete={deletePayment}
-
-                                onUpdate={updatePayment}
+                            <PaymentSourceList
+                                clientId={clientId}
+                                paymentSources={paymentSources}
 
                             />
 
@@ -257,8 +232,8 @@ export default function PaymentsPage() {
                 </div>
 
             </div>
-
         </div>
     );
-}
+};
 
+export default PaymentSourcePage;

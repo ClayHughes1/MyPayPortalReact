@@ -17,6 +17,9 @@ class MakePaymentRequest {
             data.paymentDate ||
             new Date().toISOString();
 
+        this.cardType = 
+            data.cardType || "";
+
     }
 }
 

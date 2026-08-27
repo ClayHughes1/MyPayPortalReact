@@ -426,8 +426,72 @@ const ReportPage = () => {
             return;
         }
 
+            if (outputType === "csv") {
+
+                await handleGenerateCsv();
+
+                return;
+            }
+        
         await handleGenerateChart();
     };
+
+    // =========================================================
+    // Generate CSV
+    // =========================================================
+
+    const handleGenerateCsv = async () => {
+
+        setError("");
+
+        const customerId =
+            getCustomerId();
+
+        if (!customerId) {
+
+            setError(
+                "Unable to determine the logged-in customer."
+            );
+
+            return;
+        }
+
+        if (!validateDates()) {
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            await reportService.generateCsvReport(
+                reportType,
+                customerId,
+                dateFrom,
+                dateTo
+            );
+
+        }
+        catch (err) {
+
+            console.error(
+                "Error generating CSV:",
+                err
+            );
+
+            setError(
+                err.message ||
+                "An error occurred while generating the CSV report."
+            );
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
+    };
+
 
 
     // =========================================================
@@ -686,6 +750,10 @@ const ReportPage = () => {
                                             PDF Report
                                         </option>
 
+                                        <option value="csv">
+                                            CSV Report
+                                        </option>
+
                                         <option value="line">
                                             Line Chart
                                         </option>
@@ -704,11 +772,10 @@ const ReportPage = () => {
 
 
                                 {/* ---------------------------------
-                                    PDF Report Type
+                                    PDF And CSV Report Type
                                 ---------------------------------- */}
 
-                                {outputType === "pdf" && (
-
+                                {(outputType === "pdf" || outputType === "csv") && (
                                     <div className="mb-3">
 
                                         <label
@@ -825,7 +892,44 @@ const ReportPage = () => {
 
                                 <div className="d-grid">
 
+
                                     <button
+                                        type="submit"
+                                        className={
+                                            outputType === "pdf"
+                                                ? "btn btn-primary"
+                                                : outputType === "csv"
+                                                    ? "btn btn-success"
+                                                    : "btn btn-success"
+                                        }
+                                        disabled={
+                                            loading ||
+                                            chartLoading
+                                        }
+                                    >
+                                        {outputType === "pdf"
+                                            ? (
+                                                loading
+                                                    ? "Generating PDF..."
+                                                    : "Generate PDF"
+                                            )
+                                            : outputType === "csv"
+                                                ? (
+                                                    loading
+                                                        ? "Generating CSV..."
+                                                        : "Generate CSV"
+                                                )
+                                                : (
+                                                    chartLoading
+                                                        ? "Generating Chart..."
+                                                        : "Generate Chart"
+                                                )
+                                        }
+                                    </button>
+
+
+
+                                    {/* <button
                                         type="submit"
                                         className={
                                             outputType === "pdf"
@@ -853,7 +957,7 @@ const ReportPage = () => {
                                             )
                                         }
 
-                                    </button>
+                                    </button> */}
 
                                 </div>
 
@@ -922,668 +1026,3 @@ const ReportPage = () => {
 
 
 export default ReportPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState } from "react";
-// import reportService from "../../../services/reportService";
-// import {
-//     LineChart,
-//     Line,
-//     BarChart,
-//     Bar,
-//     PieChart,
-//     Pie,
-//     Cell,
-//     XAxis,
-//     YAxis,
-//     CartesianGrid,
-//     Tooltip,
-//     Legend,
-//     ResponsiveContainer
-// } from "recharts";
-
-// const ReportPage = () => {
-//     const [reportType, setReportType] = useState("payment-history");
-//     const [dateFrom, setDateFrom] = useState("");
-//     const [dateTo, setDateTo] = useState("");
-//     const [loading, setLoading] = useState(false);
-//     const [error, setError] = useState("");
-
-//     // const [chartType, setChartType] =
-//     //     useState("payment-by-month");
-//     const [outputType, setOutputType] = useState("pdf");
-
-//     // const [chartData, setChartData] =
-//     //     useState([]);
-
-//     // const [chartLoading, setChartLoading] =
-//     //     useState(false);
-
-//     // const [showChart, setShowChart] =
-//     //     useState(false);
-
-//     // const handleGenerateReport = async (e) => {
-//     //     e.preventDefault();
-
-//     //     setError("");
-
-//     //     const user = JSON.parse(localStorage.getItem("user"));
-//     //     const customerId = user?.id;
-
-//     //     if (!customerId) {
-//     //         setError("Unable to determine the logged-in customer.");
-//     //         return;
-//     //     }
-
-//     //     if (!dateFrom || !dateTo) {
-//     //         setError("Please select both a start date and an end date.");
-//     //         return;
-//     //     }
-
-//     //     if (new Date(dateFrom) > new Date(dateTo)) {
-//     //         setError("The start date cannot be after the end date.");
-//     //         return;
-//     //     }
-
-//     //     try {
-//     //         setLoading(true);
-
-//     //         let pdfBlob;
-
-//     //         switch (reportType) {
-
-//     //             case "payment-history":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentHistoryReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             case "payment-total-by-loan-type":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentTotalsByLoanTypeReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             case "payment-total-by-status":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentTotalsByStatusReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             case "payment-by-month":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentsByMonthReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             case "payment-summary":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentSummaryReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             case "payment-by-loan-account":
-//     //                 pdfBlob =
-//     //                     await reportService.generatePaymentsByLoanAccountReport(
-//     //                         customerId,
-//     //                         dateFrom,
-//     //                         dateTo
-//     //                     );
-//     //                 break;
-
-//     //             default:
-//     //                 throw new Error("Invalid report type selected.");
-//     //         }
-
-//     //         const pdfUrl = window.URL.createObjectURL(pdfBlob);
-
-//     //         window.open(pdfUrl, "_blank");
-
-//     //         setTimeout(() => {
-//     //             window.URL.revokeObjectURL(pdfUrl);
-//     //         }, 1000);
-//     //     }
-//     //     catch (err) {
-//     //         console.error("Error generating report:", err);
-
-//     //         setError(
-//     //             err.message ||
-//     //             "An error occurred while generating the report."
-//     //         );
-//     //     }
-//     //     finally {
-//     //         setLoading(false);
-//     //     }
-//     // };
-
-//     const sortChartDataByMonth = (data) => {
-
-//         const monthOrder = {
-//             January: 0,
-//             February: 1,
-//             March: 2,
-//             April: 3,
-//             May: 4,
-//             June: 5,
-//             July: 6,
-//             August: 7,
-//             September: 8,
-//             October: 9,
-//             November: 10,
-//             December: 11
-//         };
-
-//         return [...data].sort((a, b) => {
-
-//             return (
-//                 monthOrder[a.month] -
-//                 monthOrder[b.month]
-//             );
-
-//         });
-//     };
-
-//     const handleGenerateReport = async (e) => {
-
-//         e.preventDefault();
-
-//         setError("");
-//         setShowReport(false);
-
-//         const user =
-//             JSON.parse(localStorage.getItem("user"));
-
-//         const customerId = user?.id;
-
-//         if (!customerId) {
-//             setError("Unable to determine the logged-in customer.");
-//             return;
-//         }
-
-//         if (!dateFrom || !dateTo) {
-//             setError("Please select both a start date and an end date.");
-//             return;
-//         }
-
-//         if (new Date(dateFrom) > new Date(dateTo)) {
-//             setError("The start date cannot be after the end date.");
-//             return;
-//         }
-
-//         try {
-
-//             setLoading(true);
-
-//             // PDF
-//             if (outputType === "pdf") {
-
-//                 let pdfBlob;
-
-//                 switch (reportType) {
-
-//                     case "payment-history":
-//                         pdfBlob =
-//                             await reportService.generatePaymentHistoryReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     case "payment-total-by-loan-type":
-//                         pdfBlob =
-//                             await reportService.generatePaymentTotalsByLoanTypeReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     case "payment-total-by-status":
-//                         pdfBlob =
-//                             await reportService.generatePaymentTotalsByStatusReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     case "payment-by-month":
-//                         pdfBlob =
-//                             await reportService.generatePaymentsByMonthReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     case "payment-summary":
-//                         pdfBlob =
-//                             await reportService.generatePaymentSummaryReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     case "payment-by-loan-account":
-//                         pdfBlob =
-//                             await reportService.generatePaymentsByLoanAccountReport(
-//                                 customerId,
-//                                 dateFrom,
-//                                 dateTo
-//                             );
-//                         break;
-
-//                     default:
-//                         throw new Error("Invalid report type.");
-//                 }
-
-//                 const pdfUrl =
-//                     window.URL.createObjectURL(pdfBlob);
-
-//                 window.open(pdfUrl, "_blank");
-
-//                 setTimeout(() => {
-//                     window.URL.revokeObjectURL(pdfUrl);
-//                 }, 1000);
-
-//                 return;
-//             }
-
-//             // Charts
-//             const data =
-//                 await reportService.getReportChartData(
-//                     reportType,
-//                     customerId,
-//                     dateFrom,
-//                     dateTo
-//                 );
-
-//             setReportData(data);
-//             setShowReport(true);
-
-//         }
-//         catch (err) {
-
-//             console.error(
-//                 "Error generating report:",
-//                 err
-//             );
-
-//             setError(
-//                 err.message ||
-//                 "Unable to generate report."
-//             );
-
-//         }
-//         finally {
-
-//             setLoading(false);
-
-//         }
-//     };
-
-//     // const handleGenerateChart = async () => {
-
-//     //     setError("");
-
-//     //     const user =
-//     //         JSON.parse(
-//     //             localStorage.getItem("user")
-//     //         );
-
-//     //     const customerId = user?.id;
-
-//     //     if (!customerId) {
-//     //         setError(
-//     //             "Unable to determine the logged-in customer."
-//     //         );
-//     //         return;
-//     //     }
-
-//     //     if (!dateFrom || !dateTo) {
-//     //         setError(
-//     //             "Please select both a start date and an end date."
-//     //         );
-//     //         return;
-//     //     }
-
-//     //     if (new Date(dateFrom) > new Date(dateTo)) {
-//     //         setError(
-//     //             "The start date cannot be after the end date."
-//     //         );
-//     //         return;
-//     //     }
-
-//     //     try {
-
-//     //         setChartLoading(true);
-
-//     //         const data =
-//     //             await reportService.getPaymentsByMonthChart(
-//     //                 customerId,
-//     //                 dateFrom,
-//     //                 dateTo
-//     //             );
-
-//     //         const sortedData =
-//     //             sortChartDataByMonth(data);
-
-//     //         setChartData(sortedData);
-//     //         setShowChart(true);
-
-//     //     }
-//     //     catch (err) {
-
-//     //         console.error(
-//     //             "Error loading chart:",
-//     //             err
-//     //         );
-
-//     //         setError(
-//     //             err.message ||
-//     //             "Unable to generate chart."
-//     //         );
-
-//     //     }
-//     //     finally {
-
-//     //         setChartLoading(false);
-
-//     //     }
-//     // };
-
-
-//     const normalizeChartData = (data, reportType) => {
-
-//         if (!Array.isArray(data)) {
-//             return [];
-//         }
-
-//         if (reportType === "payment-by-month") {
-
-//             const monthOrder = {
-//                 January: 1,
-//                 February: 2,
-//                 March: 3,
-//                 April: 4,
-//                 May: 5,
-//                 June: 6,
-//                 July: 7,
-//                 August: 8,
-//                 September: 9,
-//                 October: 10,
-//                 November: 11,
-//                 December: 12
-//             };
-
-//             return [...data].sort(
-//                 (a, b) =>
-//                     monthOrder[a.month] -
-//                     monthOrder[b.month]
-//             );
-//         }
-
-//         return data;
-//     };
-
-
-//     return (
-//         <div className="container mt-4">
-
-//             <div className="row justify-content-center">
-
-//                 <div className="col-md-8 col-lg-6">
-
-//                     <div className="card shadow-sm">
-
-//                         <div className="card-header">
-//                             <h3 className="mb-0">
-//                                 Generate Report
-//                             </h3>
-//                         </div>
-
-//                         <div className="card-body">
-
-//                             {error && (
-//                                 <div
-//                                     className="alert alert-danger"
-//                                     role="alert"
-//                                 >
-//                                     {error}
-//                                 </div>
-//                             )}
-
-//                             <form onSubmit={handleGenerateReport}>
-
-//                                 {/* Report Type */}
-//                                 <div className="mb-3">
-
-//                                     <label
-//                                         htmlFor="reportType"
-//                                         className="form-label"
-//                                     >
-//                                         Report Type
-//                                     </label>
-
-//                                     <select
-//                                         id="reportType"
-//                                         className="form-select"
-//                                         value={reportType}
-//                                         onChange={(e) =>
-//                                             setReportType(e.target.value)
-//                                         }
-//                                     >
-//                                         <option value="payment-history">
-//                                             Payment History
-//                                         </option>
-
-//                                         <option value="payment-total-by-loan-type">
-//                                             Payment Totals By Loan Type
-//                                         </option>
-
-//                                         <option value="payment-total-by-status">
-//                                             Payment Totals By Status
-//                                         </option>
-
-//                                         <option value="payment-by-month">
-//                                             Payments By Month
-//                                         </option>
-
-//                                         <option value="payment-summary">
-//                                             Payment Summary
-//                                         </option>
-
-//                                         <option value="payment-by-loan-account">
-//                                             Payments By Loan Account
-//                                         </option>
-//                                     </select>
-
-//                                 </div>
-
-//                                 {/* From Date */}
-//                                 <div className="mb-3">
-
-//                                     <label
-//                                         htmlFor="dateFrom"
-//                                         className="form-label"
-//                                     >
-//                                         From Date
-//                                     </label>
-
-//                                     <input
-//                                         id="dateFrom"
-//                                         type="date"
-//                                         className="form-control"
-//                                         value={dateFrom}
-//                                         onChange={(e) =>
-//                                             setDateFrom(e.target.value)
-//                                         }
-//                                     />
-
-//                                 </div>
-
-//                                 {/* To Date */}
-//                                 <div className="mb-3">
-
-//                                     <label
-//                                         htmlFor="dateTo"
-//                                         className="form-label"
-//                                     >
-//                                         To Date
-//                                     </label>
-
-//                                     <input
-//                                         id="dateTo"
-//                                         type="date"
-//                                         className="form-control"
-//                                         value={dateTo}
-//                                         onChange={(e) =>
-//                                             setDateTo(e.target.value)
-//                                         }
-//                                     />
-
-//                                 </div>
-
-//                                 {/* Generate */}
-//                                 {/* <div className="d-grid">
-
-//                                     <button
-//                                         type="submit"
-//                                         className="btn btn-primary"
-//                                         disabled={loading}
-//                                     >
-//                                         {loading
-//                                             ? "Generating Report..."
-//                                             : "Generate Report"}
-//                                     </button>
-
-//                                 </div> */}
-
-//                                 <div className="mb-3">
-
-//                                     <label
-//                                         htmlFor="outputType"
-//                                         className="form-label"
-//                                     >
-//                                         Report Format
-//                                     </label>
-
-//                                     <select
-//                                         id="outputType"
-//                                         className="form-select"
-//                                         value={outputType}
-//                                         onChange={(e) =>
-//                                             setOutputType(e.target.value)
-//                                         }
-//                                     >
-
-//                                         <option value="pdf">
-//                                             PDF Report
-//                                         </option>
-
-//                                         <option value="line">
-//                                             Line Chart
-//                                         </option>
-
-//                                         <option value="bar">
-//                                             Bar Chart
-//                                         </option>
-
-//                                         <option value="pie">
-//                                             Pie Chart
-//                                         </option>
-
-//                                     </select>
-
-//                                 </div>
-
-                                
-//                                 <div className="d-grid">
-
-//                                     <button
-//                                         type="submit"
-//                                         className="btn btn-primary"
-//                                         disabled={loading}
-//                                     >
-//                                         {loading
-//                                             ? "Generating..."
-//                                             : "Generate Report"}
-//                                     </button>
-
-//                                 </div>
-
-
-//                                     {/* <button
-//                                         type="submit"
-//                                         className="btn btn-primary"
-//                                         disabled={loading}
-//                                     >
-//                                         {loading
-//                                             ? "Generating Report..."
-//                                             : "Generate Report"}
-//                                     </button>
-
-//                                     <button
-//                                         type="button"
-//                                         className="btn btn-success"
-//                                         disabled={chartLoading}
-//                                         onClick={handleGenerateChart}
-//                                     >
-//                                         {chartLoading
-//                                             ? "Generating Chart..."
-//                                             : "Generate Chart"}
-//                                     </button> */}
-
-
-//                             </form>
-
-//                         </div>
-
-//                     </div>
-
-
-//                 </div>
-
-//             </div>
-
-//         </div>
-//     );
-// };
-
-// export default ReportPage;
