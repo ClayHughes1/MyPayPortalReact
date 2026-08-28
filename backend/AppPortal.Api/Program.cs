@@ -173,6 +173,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoanAccountService, LoanAccountService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<GoogleLoginStateService>();
+builder.Services.AddScoped<IPaymentSourceService,PaymentSourceService>();
 
 builder.Services.AddScoped<IJwtService, JWTService>();
 builder.Services.AddScoped<AuthService>();

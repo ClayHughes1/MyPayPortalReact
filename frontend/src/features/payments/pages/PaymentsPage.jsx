@@ -6,68 +6,201 @@ import PaymentForm from "../components/PaymentForm";
 import PaymentList from "../components/PaymentList";
 
 import usePayments from "../hooks/usePayments";
-import LoanAccountEditModal from "../components/LoanAccountEditModal";
+
+import logService from "../../../services/logService";
+
 
 export default function PaymentsPage() {
 
-    const [currentUser, setCurrentUser] = useState(null);
-    const [editingPayment, setEditingPayment] = useState(null);
-    const [savingLoanAccount, setSavingLoanAccount] =
-        useState(false);
-        
+    const [currentUser, setCurrentUser] =
+        useState(null);
+
+
     const {
-
         payments,
-
         loading,
-
         error,
-
         createPayment,
-
         updatePayment,
-
         deletePayment
-
-
     } = usePayments();
 
 
+    // =========================================================
+    // LOAD CURRENT USER
+    // =========================================================
 
     useEffect(() => {
 
-        const storedUser = localStorage.getItem("user");
+        const loadCurrentUser = async () => {
 
-        if (storedUser) {
+            try {
 
-            const user = JSON.parse(storedUser);
-            setCurrentUser(user);
+                await logService.info(
+                    "Payments page initialization started.",
+                    {
+                        sourceContext:
+                            "PaymentsPage",
 
-        }
-        else {
+                        requestPath:
+                            "/payments",
 
-            console.warn("No logged-in user found.");
+                        httpMethod:
+                            "GET"
+                    }
+                );
 
-        }
 
+                const storedUser =
+                    localStorage.getItem("user");
+
+
+                if (!storedUser) {
+
+                    await logService.logWarning(
+                        "Payments page loaded without a logged-in user.",
+                        {
+                            sourceContext:
+                                "PaymentsPage",
+
+                            requestPath:
+                                "/payments",
+
+                            httpMethod:
+                                "GET"
+                        }
+                    );
+
+                    setCurrentUser(null);
+
+                    return;
+                }
+
+
+                const user =
+                    JSON.parse(storedUser);
+
+
+                setCurrentUser(user);
+
+
+                await logService.info(
+                    "Payments page loaded for authenticated user.",
+                    {
+                        sourceContext:
+                            "PaymentsPage",
+
+                        requestPath:
+                            "/payments",
+
+                        httpMethod:
+                            "GET",
+
+                        customerId:
+                            user?.id ?? null
+                    }
+                );
+
+            }
+            catch (error) {
+
+                await logService.logError(
+                    "Error loading current user on Payments page.",
+                    {
+                        sourceContext:
+                            "PaymentsPage",
+
+                        requestPath:
+                            "/payments",
+
+                        httpMethod:
+                            "GET",
+
+                        exception:
+                            error?.message
+                    }
+                );
+            }
+
+        };
+
+
+        loadCurrentUser();
 
     }, []);
 
-    const handleEditLoanAccount = (payment) => {
-        setEditingPayment(payment);
-    };
 
-    const handleSaveLoanAccount = async (
-        loanAccountId,
-        loanAccountData
-    ) => {
+    // =========================================================
+    // MONITOR PAYMENT DATA
+    // =========================================================
 
-    };
+    useEffect(() => {
+
+        if (loading) {
+
+            logService.info(
+                "Payment data loading started.",
+                {
+                    sourceContext:
+                        "PaymentsPage",
+
+                    requestPath:
+                        "/api/payments"
+                }
+            );
+
+            return;
+        }
+
+
+        if (error) {
+
+            logService.logError(
+                "Payment data failed to load.",
+                {
+                    sourceContext:
+                        "PaymentsPage",
+
+                    requestPath:
+                        "/api/payments",
+
+                    exception:
+                        error
+                }
+            );
+
+            return;
+        }
+
+
+        if (payments) {
+
+            logService.info(
+                "Payment data loaded successfully.",
+                {
+                    sourceContext:
+                        "PaymentsPage",
+
+                    requestPath:
+                        "/api/payments"
+                }
+            );
+        }
+
+    }, [
+        loading,
+        error,
+        payments
+    ]);
+
+
+    // =========================================================
+    // RENDER
+    // =========================================================
 
     return (
 
         <div className="container-fluid py-4">
-
 
             <h1>
                 Payment Management
@@ -75,8 +208,9 @@ export default function PaymentsPage() {
 
 
             <p>
-                Manage your payment accounts.
+                Manage your payments.
             </p>
+
 
             {
                 error &&
@@ -86,16 +220,14 @@ export default function PaymentsPage() {
                     {error}
 
                 </div>
-
             }
 
 
             <div className="row">
+
                 <div className="col-lg-12">
 
-
                     <div className="card">
-
 
                         <div className="card-header">
 
@@ -105,34 +237,28 @@ export default function PaymentsPage() {
 
 
                         <div className="card-body">
-                            <PaymentList
-                                payments={payments}
-                                loading={loading}
-                                onDelete={deletePayment}
-                                onUpdate={handleEditLoanAccount}
-                            />
-                        </div>
 
-                        {editingPayment && (
-                            <LoanAccountEditModal
-                                payment={editingPayment}
-                                onSave={handleSaveLoanAccount}
-                                onClose={() => setEditingPayment(null)}
-                                saving={savingLoanAccount}
+                            <PaymentList
+
+                                payments={payments}
+
+                                loading={loading}
+
+                                onDelete={deletePayment}
+
+                                onUpdate={updatePayment}
+
                             />
-                        )}
+
+                        </div>
 
                     </div>
 
-
                 </div>
-
 
             </div>
 
-
         </div>
-
     );
-
 }
+

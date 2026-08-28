@@ -52,7 +52,7 @@ onUpdate
 
             <p>
             <strong>Next Payment:</strong>
-             {payment.paymentDate
+            {payment.paymentDate
                 ? new Date(payment.paymentDate).toLocaleDateString()
                 : ""}
             </p>
