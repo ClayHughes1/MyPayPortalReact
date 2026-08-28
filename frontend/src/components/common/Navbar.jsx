@@ -262,6 +262,64 @@ export default function Navbar() {
                     )}
 
                     {/* ================================
+                        PAYMENT Sources
+                    ================================= */}
+
+                    {isLoggedIn && (
+
+                        <li className="nav-item dropdown">
+
+                            <button
+                                className="nav-link dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                Payment Source
+                            </button>
+
+
+                            <ul className="dropdown-menu">
+
+                                <li>
+                                    <NavLink
+                                        to="/paymentsource"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Payment Sources
+                                    </NavLink>
+                                </li>
+
+
+                                <li>
+                                    <NavLink
+                                        to="/paymentsource/create"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Create A Payment Source
+                                    </NavLink>
+                                </li>
+
+
+                                <li>
+                                    <NavLink
+                                        to="/paymentsource/edit"
+                                        className="dropdown-item"
+                                        onClick={closeMenu}
+                                    >
+                                        Edit Payment Source
+                                    </NavLink>
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+                    )}
+
+                    {/* ================================
                         LOANS
                     ================================= */}
                     {isLoggedIn && (

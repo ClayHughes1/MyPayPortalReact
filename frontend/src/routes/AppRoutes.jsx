@@ -14,6 +14,10 @@ import CreateLoanAccount from "../features/loans/pages/CreateLoanAccount";
 import LoanPage from "../features/loans/pages/LoanAccounts";
 import EditLoanAccount from "../features/loans/pages/EditLoanAccount";
 import GoogleCallback from "../pages/GoogleCallback";
+import PaymentSources from "../features/paymentsource/pages/PaymentSourcePage";
+import CreatePaymentSources from "../features/paymentsource/components/PaymentSourceCreateModal";
+import EditPaymentSources from "../features/paymentsource/components/PaymentSourceEditModal";
+
 
 // and useSearchParams() retrieves:
 //https://console.cloud.google.com/welcome?project=mypayportal
@@ -57,6 +61,22 @@ console.log("in routes page isAuthenticated ",isAuthenticated);
                 path="/payments/makeapayment"
                 element={<MakeAPayment />}
             />
+
+            <Route
+                path="/paymentsource"
+                element={
+                        <PaymentSources />
+                }
+            />
+            <Route
+                path="/paymentsource/create"
+                element={<CreatePaymentSources />}
+            />
+            <Route
+                path="/paymentsource/edit"
+                element={<EditPaymentSources />}
+            />
+
 
             <Route
                 path="/loans"

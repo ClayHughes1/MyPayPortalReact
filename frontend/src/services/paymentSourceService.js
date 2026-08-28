@@ -1,5 +1,5 @@
 const PaySources_API_URL =
-    "http://localhost:5000/api/PaymentSources";
+    "http://localhost:5000/api/paymentsources";
 
 
 /*
@@ -20,6 +20,16 @@ const PaySources_API_URL =
  * when retrieving payment sources.
  */
 
+function getAuthHeaders()
+{
+    const token = localStorage.getItem("token");
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
+
 
 /*
  * ============================================================
@@ -34,18 +44,15 @@ const PaySources_API_URL =
  */
 
 const getAll = async () => {
+        // customerId
 
     const response =
         await fetch(
+            // `${PaySources_API_URL}}`,
             PaySources_API_URL,
             {
                 method: "GET",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                credentials: "include"
+                headers: getAuthHeaders()
             }
         );
 
@@ -78,7 +85,6 @@ const getAll = async () => {
         );
 
     }
-
 
     return await response.json();
 

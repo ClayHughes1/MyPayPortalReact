@@ -85,6 +85,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<ApplicationLog>()
             .ToTable("ApplicationLogs");
 
+        modelBuilder.Entity<PaymentSource>()
+            .ToTable("PaymentSource");
+
         base.OnModelCreating(modelBuilder);
     }
 }

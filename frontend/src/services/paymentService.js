@@ -22,30 +22,6 @@ const paymentService = {
      * already knows the customerId and needs all payment methods.
      */
 
-    async getAllPaymentSources()
-    {
-        const response = await fetch(
-            `${PaySources_API_URL}`,
-            {
-                method: "GET",
-                headers: getAuthHeaders()
-            }
-        );
-
-
-        const data = await response.json();
-
-
-        if(!response.ok)
-        {
-            throw new Error(
-                data.message || "Unable to retrieve payments."
-            );
-        }
-
-
-        return data;
-    },
 
 
 

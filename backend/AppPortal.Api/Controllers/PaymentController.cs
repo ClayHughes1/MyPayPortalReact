@@ -60,7 +60,7 @@ public class PaymentsController : ControllerBase
                 customerId,
                 payments?.Count() ?? 0);
 
-            var response = payments
+            var response = payments?
                 .Select(p => new PaymentResponse
                 {
                     Id = Convert.ToInt32(p.Id),
@@ -115,7 +115,7 @@ public class PaymentsController : ControllerBase
             _logger.LogInformation(
                 "GetPayments completed successfully. CustomerId: {CustomerId}, PaymentCount: {PaymentCount}",
                 customerId,
-                response.Count);
+                response?.Count);
 
             return Ok(response);
         }
